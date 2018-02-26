@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartMonitoringProfiles", "smartMonitoringProfiles\smartMonitoringProfiles.vcproj", "{8B6C6860-7021-476E-A34C-7F6202DC8DB4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartXml", "smartXml\smartXml.vcproj", "{43F041DA-66EB-43E6-9780-44E1532691BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartProperty", "smartProperty\smartProperty.vcproj", "{3524985F-B7EE-44C3-96F7-236DCF53EA9A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartMonitoringSlave", "smartMonitoringSlave\smartMonitoringSlave.vcproj", "{C204F0A9-A508-4B65-A76B-64B1C82C2407}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4} = {8B6C6860-7021-476E-A34C-7F6202DC8DB4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartMonitoringMaster", "smartMonitoringMaster\smartMonitoringMaster.vcproj", "{B755F05C-7F27-4E70-9F06-A3662D494A7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4} = {8B6C6860-7021-476E-A34C-7F6202DC8DB4}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4}.Debug|Win32.Build.0 = Debug|Win32
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4}.Release|Win32.ActiveCfg = Release|Win32
+		{8B6C6860-7021-476E-A34C-7F6202DC8DB4}.Release|Win32.Build.0 = Release|Win32
+		{43F041DA-66EB-43E6-9780-44E1532691BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{43F041DA-66EB-43E6-9780-44E1532691BF}.Debug|Win32.Build.0 = Debug|Win32
+		{43F041DA-66EB-43E6-9780-44E1532691BF}.Release|Win32.ActiveCfg = Release|Win32
+		{43F041DA-66EB-43E6-9780-44E1532691BF}.Release|Win32.Build.0 = Release|Win32
+		{3524985F-B7EE-44C3-96F7-236DCF53EA9A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3524985F-B7EE-44C3-96F7-236DCF53EA9A}.Debug|Win32.Build.0 = Debug|Win32
+		{3524985F-B7EE-44C3-96F7-236DCF53EA9A}.Release|Win32.ActiveCfg = Release|Win32
+		{3524985F-B7EE-44C3-96F7-236DCF53EA9A}.Release|Win32.Build.0 = Release|Win32
+		{C204F0A9-A508-4B65-A76B-64B1C82C2407}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C204F0A9-A508-4B65-A76B-64B1C82C2407}.Debug|Win32.Build.0 = Debug|Win32
+		{C204F0A9-A508-4B65-A76B-64B1C82C2407}.Release|Win32.ActiveCfg = Release|Win32
+		{C204F0A9-A508-4B65-A76B-64B1C82C2407}.Release|Win32.Build.0 = Release|Win32
+		{B755F05C-7F27-4E70-9F06-A3662D494A7B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B755F05C-7F27-4E70-9F06-A3662D494A7B}.Debug|Win32.Build.0 = Debug|Win32
+		{B755F05C-7F27-4E70-9F06-A3662D494A7B}.Release|Win32.ActiveCfg = Release|Win32
+		{B755F05C-7F27-4E70-9F06-A3662D494A7B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

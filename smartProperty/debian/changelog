@@ -1,0 +1,11 @@
+smartproperty (1.0.0) precise; urgency=low
+
+  * new release
+
+ -- matthias Lutz <lutz@C26-09-zafh>  Wed, 02 Apr 2014 11:53:51 +0200
+
+smartproperty (1.0.0) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- matthias Lutz <lutz@unknown>  Tue, 04 Mar 2014 13:20:22 +0100

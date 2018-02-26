@@ -1,0 +1,11 @@
+libsmartxml (1.0.0) precise; urgency=low
+
+  * new release
+
+ -- matthias Lutz <lutz@C26-09-zafh>  Wed, 02 Apr 2014 11:55:38 +0200
+
+libsmartxml (1.0.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- matthias Lutz <lutz@unknown>  Fri, 28 Mar 2014 10:14:00 +0100

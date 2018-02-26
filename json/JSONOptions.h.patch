@@ -1,0 +1,12 @@
+14c14
+< #define JSON_LIBRARY
+---
+> // #define JSON_LIBRARY
+97c97
+< #define JSON_BINARY
+---
+> //#define JSON_BINARY
+105c105
+< #define JSON_EXPOSE_BASE64
+---
+> //#define JSON_EXPOSE_BASE64

@@ -1,0 +1,22 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+
+PROJECT(SmartUtilities)
+
+FIND_FILE(SMART_MACROS SmartMacros2.cmake PATHS $ENV{SMART_ROOT_ACE}/CMakeMacros /opt/smartSoftAce/CMakeMacros)
+INCLUDE(${SMART_MACROS})
+
+SMART_ADD_PACKAGE(Armadillo ${CMAKE_CURRENT_LIST_DIR}/armadillo)
+SMART_ADD_PACKAGE(OpenCVHelpers ${CMAKE_CURRENT_LIST_DIR}/openCVHelpers)
+SMART_ADD_PACKAGE(FawXfig ${CMAKE_CURRENT_LIST_DIR}/fawXfig)
+
+# ADD_SUBDIRECTORY(smartMonitoring)
+
+SMART_ADD_PACKAGE(SmartProperty ${CMAKE_CURRENT_LIST_DIR}/smartProperty)
+SMART_ADD_PACKAGE(SmartSickInterface ${CMAKE_CURRENT_LIST_DIR}/smartSickInterface)
+SMART_ADD_PACKAGE(SmartXml ${CMAKE_CURRENT_LIST_DIR}/smartXml)
+SMART_ADD_PACKAGE(TransformationMatrices ${CMAKE_CURRENT_LIST_DIR}/transformationMatrices)
+SMART_ADD_PACKAGE(YAML_CPP ${CMAKE_CURRENT_LIST_DIR}/yaml-cpp)
+#SMART_ADD_UTILITY(Metric-FF)
+#SMART_ADD_UTILITY(smartSoftDebianMetaPackages)
+#SMART_ADD_UTILITY(smartSoftBuildEnv-DebianPackage)
+

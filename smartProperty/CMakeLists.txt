@@ -1,0 +1,35 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+
+FIND_FILE(SMART_MACROS SmartMacros2.cmake PATHS $ENV{SMART_ROOT_ACE}/CMakeMacros /opt/smartSoftAce/CMakeMacros)
+INCLUDE(${SMART_MACROS})
+
+SMART_UTILITY_PROJECT(SmartProperty 1.0.0)
+
+#SMART_UTILITY_BUILD_DEBIAN_PACKAGE(${PROJECT_NAME} ${PACKAGE_VERSION_STRING})
+
+SET(SRCS smartProperty.cc  smartPropertyItem.cc  smartPropertyKey.cc  smartPropertySet.cc)
+SET(TESTS testProperty.cc)
+
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+# create the library
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS})
+
+# setup include directories for this target
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>  # <prefix>/include/mylib
+)
+
+
+# create the tests
+ADD_EXECUTABLE(${PROJECT_NAME}Tests ${TESTS})
+ADD_DEPENDENCIES(${PROJECT_NAME}Tests ${PROJECT_NAME})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}Tests ${PROJECT_NAME})
+
+
+SET(HDRS smartProperty.hh  smartPropertyItem.hh  smartPropertySet.hh)
+INSTALL(FILES ${HDRS} DESTINATION include/${PROJECT_NAME})
+SMART_UTILITY_INSTALL(${PROJECT_NAME})
+
+

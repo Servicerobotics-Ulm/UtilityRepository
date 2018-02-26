@@ -1,0 +1,66 @@
+This directory contains the C implementation of Metric-FF, as it was
+used in the 3rd international planning competition. Build the planner
+by typing
+
+make
+
+Which produces an executable named
+
+ff
+
+Usage should be self-explanatory. Running ff without any parameters
+prints out a brief help information about the parameters that are
+applicable, which basically come down to specifying the domain and
+problem files.
+
+Have fun,
+
+Joerg Hoffmann
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+Further infos by Andreas Steck, taking some modifications into account with respect
+to the usage in the SmartSoft Framework.
+
+
+Dependency to flex bison
+========================
+
+SuSE 10.3
+=========
+flex 2.5.35     -- manual (./configure; make; sudo make install)
+bison 2.3       -- YaST
+
+SuSE 11.3
+=========
+flex 2.5.35     -- YaST
+bison 2.4.1     -- YaST
+
+Ubuntu 10.04 LTS
+================
+flex flex 2.5.35 -- Package Manager
+bison 2.4.1      -- Package Manager
+
+
+Install
+=======
+
+# make
+--> produces an executable named metric-ff
+
+
+# sudo ln -s ~/SOFTWARE/smartsoft/src/utility/Metric-FF/metric-ff /bin/metric-ff
+
+
+
+Have fun,
+Andreas Steck
+steck@hs-ulm.de
+
+

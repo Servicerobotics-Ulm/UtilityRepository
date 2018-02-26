@@ -1,0 +1,11 @@
+smartsoft-armadillo (1.0.0) precise; urgency=low
+
+  * new release
+
+ -- matthias Lutz <lutz@C26-09-zafh>  Wed, 02 Apr 2014 11:47:56 +0200
+
+smartsoft-armadillo (1.0.0) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- SmartMDSDToolchain <mail@unknown>  Mon, 31 Mar 2014 12:58:36 +0200

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="WxDebug"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\include\msvc&quot;"
+		PreprocessorDefinitions="WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0400;__WXMSW__;_WINDOWS;wxUSE_GUI=1;_UNICODE;_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
+		RuntimeLibrary="1"
+		UsePrecompiledHeader="0"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="wxmsw28ud_core.lib wxbase28ud.lib comctl32.lib rpcrt4.lib winmm.lib advapi32.lib wsock32.lib wxpngd.lib wxzlibd.lib wxjpegd.lib wxtiffd.lib"
+		AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_lib&quot;"
+		SubSystem="2"
+	/>
+</VisualStudioPropertySheet>
