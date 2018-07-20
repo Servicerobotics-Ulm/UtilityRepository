@@ -95,7 +95,6 @@ function askabort() {
 	fi
 }
 
-
 if `grep --ignore-case precise /etc/os-release > /dev/null`; then 
 	OS_PRECISE=true
 fi
@@ -199,7 +198,7 @@ menu-install)
 ;;
 
 ###############################################################################
-# TODO ALEX
+# ALEX
 ace-source-install)
 	# become root
 	if [ "$(id -u)" != "0" ]; then
@@ -210,7 +209,7 @@ ace-source-install)
 	echo -e "\n\n\n### Running ACE source install (will take some time) ...\n\n\n"
 	sleep 2
 
-	wget -nv http://sourceforge.net/p/smartsoft-ace/code/HEAD/tree/trunk/INSTALL-ACE-6.0.2.sh?format=raw -O /tmp/INSTALL-ACE-6.0.2.sh || askabort
+	wget -nv https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework/raw/master/INSTALL-ACE-6.0.2.sh -O /tmp/INSTALL-ACE-6.0.2.sh || askabort
 	chmod +x /tmp/INSTALL-ACE-6.0.2.sh || askabort
 	/tmp/INSTALL-ACE-6.0.2.sh /opt || askabort
 
@@ -235,7 +234,7 @@ package-install)
 	apt-get -y --force-yes upgrade || askabort
 
 	# General packages:
-	apt-get -y --force-yes install flex bison htop tree cmake cmake-curses-gui subversion sbcl doxygen \
+	apt-get -y --force-yes install git flex bison htop tree cmake cmake-curses-gui subversion sbcl doxygen \
  meld expect wmctrl libopencv-dev libboost-all-dev libftdi-dev libcv-dev libcvaux-dev libhighgui-dev \
  build-essential pkg-config freeglut3-dev zlib1g-dev zlibc libusb-1.0-0-dev libdc1394-22-dev libavformat-dev libswscale-dev \
  lib3ds-dev libjpeg-dev libgtest-dev libeigen3-dev libglew-dev vim vim-gnome libxml2-dev libxml++2.6-dev libmrpt-dev ssh sshfs xterm libjansson-dev || askabort
@@ -327,7 +326,7 @@ package-upgrade)
 
 ###############################################################################
 # checkout Public repository
-# TODO alex
+# alex
 repo-co-smartsoft)
 	# check if we are in the lab and then ask wether to continue to install external stuff
 	# or quit and continue with internal stuff
@@ -338,24 +337,33 @@ repo-co-smartsoft)
 		fi
 	fi
 
-	zenity --info --text="will now install PUBLIC STUFF"
-	exit 0
-
 	echo -e "\n\n\n### Running repo checkout ...\n\n\n"
 	sleep 2
 
-	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v2
-	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v2 ~/SOFTWARE/smartsoft || askabort
+	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3
+	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos
+	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v3 ~/SOFTWARE/smartsoft || askabort
 
 	echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
 	echo "export SMART_ROOT_ACE=\$HOME/SOFTWARE/smartsoft" >> ~/.profile
-	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/src" >> ~/.profile
+	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/repos" >> ~/.profile
 	echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
 
 	source ~/.profile 
 
-	svn co http://svn.code.sf.net/p/smartsoft-ace/code/trunk/ ~/SOFTWARE/smartsoft-ace-mdsd-v2 || askabort
-	
+	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos
+
+	# clone ACE/SmartSoft
+	git clone https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework.git || askabort
+	# clone Utilities
+	git clone https://github.com/Servicerobotics-Ulm/UtilityRepository.git || askabort
+	# clone DataRepository
+	git clone https://github.com/Servicerobotics-Ulm/DataRepository.git || askabort
+	# clone DomainModels
+	git clone https://github.com/Servicerobotics-Ulm/DomainModelsRepositories.git || askabort
+	# clone Components
+	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
+
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
 	exit 0
@@ -368,18 +376,25 @@ repo-co-smartsoft-internal)
 	echo -e "\n\n\n### Running repo checkout (SRRC-INTERNAL REPOSITORIES) ...\n\n\n"
 	sleep 2
 
-	zenity --info --text="will now install INTERNAL"
-
 ;;
 
 ###############################################################################
-# TODO update alex
+# update alex
 repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft SVN update ...\n\n\n"
 	sleep 2
 
-	cd $SMART_ROOT_ACE || askabort
-	svn up || askabort
+	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
+	git pull || askabort
+	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
+	git pull || askabort
+	cd $SMART_ROOT_ACE/repos/DataRepository || askabort
+	git pull || askabort
+	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
+	git pull || askabort
+	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
+	git pull || askabort
+
 	exit 0
 ;;
 
@@ -391,18 +406,33 @@ build-smartsoft)
 
 	echo -e "\n\n\n### Running Build ACE/SmartSoft Kernel ...\n\n\n"
 	# warkaround for the case when the kernel is not built automatically as external dependency
-	cd $SMART_ROOT_ACE/src/smartSoftKernel || askabort
+	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
 	mkdir build
 	cd build || askabort
 	cmake ..
 	make install || askabort
 
-	echo -e "\n\n\n### Running Build ACE/SmartSoft Global-Build ...\n\n\n"
-	cd $SMART_ROOT_ACE || askabort
+	echo -e "\n\n### Running Build Utilities"
+	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
 	mkdir build
 	cd build || askabort
 	cmake ..
 	make || askabort
+
+	echo -e "\n\n### Running Build DomainModels"
+	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
+	mkdir build
+	cd build || askabort
+	cmake ..
+	make || askabort
+
+	echo -e "\n\n### Running Build Components"
+	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
+	mkdir build
+	cd build || askabort
+	cmake ..
+	make || askabort
+
 	exit 0
 ;;
 
