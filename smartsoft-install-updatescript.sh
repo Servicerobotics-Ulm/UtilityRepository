@@ -531,7 +531,6 @@ script-update)
 	echo "Tempfile: $T"
 	
 	wget "$SCRIPT_UPDATE_URL" -O $T
-	cp $0 $T #################### FIXME!!!!!!!!!!!!!!!!
 
 	if [ "$(file --mime-type -b $T)" != "text/x-shellscript" ]; then
 		zenity --info --text="Error updating the script."
@@ -547,6 +546,7 @@ script-update)
 	fi
 	echo -e "\n # Test OK"
 
+	mv $T $0
 ;;
 
 
