@@ -79,7 +79,9 @@ SCRIPT_DIR=`pwd`
 SCRIPT_NAME=$0
 SCRIPT_UPDATE_URL="https://github.com/Servicerobotics-Ulm/UtilityRepository/raw/master/smartsoft-install-updatescript.sh"
 TOOLCHAIN_LATEST_URL="https://web2.servicerobotik-ulm.de/files/SmartMDSD_Toolchain/latest.tar.gz"
+COMMIT='$Id$'
 
+echo "Update Script git=$COMMIT"
 
 function abort() {
 	echo -e "\n\n### Aborted.\nYou can find a logfile in your current working directory:\n"
@@ -135,13 +137,13 @@ menu)
 		--column="" --column=Action --column=Description \
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
-		true package-upgrade "Upgrade system packages*" \
-		false menu-install "Install ACE/SmartSoft and dependencies on a clean system*" \
-		true repo-up-smartsoft "Update ACE/SmartSoft SVN" \
-		true build-smartsoft "Build/Compile ACE/SmartSoft" \
-		false svn-up-robotino "Update Robotino SVN" \
-		false build-robotino "Build/Compile Robotino ACE/SmartSoft Components" \
-		true toolchain-update "Update/Install SmartMDSD Toolchain to latest version" \
+		true package-upgrade "1) Upgrade system packages*" \
+		false menu-install "2) Install ACE/SmartSoft and dependencies on a clean system*" \
+		true repo-up-smartsoft "3) Update ACE/SmartSoft SVN" \
+		true build-smartsoft "4) Build/Compile ACE/SmartSoft" \
+		false svn-up-robotino "5) Update Robotino SVN" \
+		false build-robotino "6) Build/Compile Robotino ACE/SmartSoft Components" \
+		true toolchain-update "7) Update/Install SmartMDSD Toolchain to latest version" \
 	) || exit 1
 
 	CMD=""
@@ -150,7 +152,7 @@ menu)
 		CMD="$CMD bash $SCRIPT_NAME $A || askabort;"
 	done
 	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
-	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
+	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
 	echo $! > /tmp/smartsoft-install-update.pid
 
 	#echo -e "icon:info\ntooltip:Update script finished."|zenity --notification --listen &
@@ -165,7 +167,7 @@ menu-install)
 	zenity --question --text="ATTENTION:\n The script is about to install ACE/SmartSoft and dependency packages on this system. Only use this function on a clean installation of Ubuntu 16.04. Some of the following steps may not be execute twice without undoing them before.\n\nProceed?\n\n* Experimental support for Raspbian 8.0/Jessie available" || abort 
 
 	ACTION=$(zenity \
-		--title "ACE/SmartSoft Install" \
+		--title "Install ACE/SmartSoft and dependencies on a clean system" \
 		--text "Please select update actions to perform:\n" \
 		--list --checklist \
 		--height=270 \
@@ -173,12 +175,12 @@ menu-install)
 		--column="" --column=Action --column=Description \
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
-		false package-install "Install system packages required for ACE/SmartSoft" \
-		false ace-source-install "Install ACE from source" \
-		false repo-co-smartsoft "Checkout ACE/SmartSoft repository and set environment variables" \
-		false package-install-robotino "Install packages for robotino robot" \
-		false svn-co-robotino "Checkout ACE/SmartSoft repository for robotino robot" \
-        	false package-internal-install "Install additional generic packages (optional)"\
+		false package-install "1.1) Install system packages required for ACE/SmartSoft" \
+		false ace-source-install "1.2) Install ACE from source" \
+		false repo-co-smartsoft "1.3) Checkout ACE/SmartSoft repository and set environment variables" \
+		false package-install-robotino "1.4) Install packages for robotino robot" \
+		false svn-co-robotino "1.5) Checkout ACE/SmartSoft repository for robotino robot" \
+        	false package-internal-install "1.6) Install additional generic packages (optional)"\
 	) || abort
 
 	IFS='|';
@@ -191,7 +193,7 @@ menu-install)
 	echo
 	echo
 
-	echo -e "icon:info\ntooltip:Installation script finished."|zenity --notification --listen &
+	echo -e "icon:info\ntooltip:Installation script finished." | zenity --notification --listen &
 
 	exit 0
 ;;
