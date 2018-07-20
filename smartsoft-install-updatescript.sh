@@ -77,7 +77,7 @@ source ~/.profile
 
 SCRIPT_DIR=`pwd`
 SCRIPT_NAME=$0
-SCRIPT_UPDATE_URL="xxFIXME UTILITY REPOSITORYxxxxxxxxxxxxxxxxxxxxxxx"
+SCRIPT_UPDATE_URL="https://github.com/Servicerobotics-Ulm/UtilityRepository/raw/master/smartsoft-install-updatescript.sh"
 TOOLCHAIN_LATEST_URL="https://web2.servicerobotik-ulm.de/files/SmartMDSD_Toolchain/latest.tar.gz"
 
 
