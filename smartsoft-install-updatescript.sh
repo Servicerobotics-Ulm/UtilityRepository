@@ -129,7 +129,7 @@ menu)
 
 	ACTION=$(zenity \
 		--title "SmartSoft Install & Update Script" \
-		--text "This is the automatic installation script for the SmartSoft World. Depending\non your selection, it will install the SmartMDSD Toolchain with a full development environment.\n\nPlease select update actions to perform:\n\n* action uses sudo" \
+		--text "This is the automatic installation script for the SmartSoft World (v3-generation). Depending\non your selection, it will install the SmartMDSD Toolchain with a full development environment.\n\nPlease select update actions to perform:\n\n* action uses sudo" \
 		--list --checklist \
 		--height=350 \
 		--width=430 \
@@ -137,12 +137,12 @@ menu)
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
 		true package-upgrade "1) Upgrade system packages*" \
-		false menu-install "2) Install ACE/SmartSoft and dependencies on a clean system*" \
-		true repo-up-smartsoft "3) Update ACE/SmartSoft SVN" \
-		true build-smartsoft "4) Build/Compile ACE/SmartSoft" \
-		false svn-up-robotino "5) Update Robotino SVN" \
-		false build-robotino "6) Build/Compile Robotino ACE/SmartSoft Components" \
-		true toolchain-update "7) Update/Install SmartMDSD Toolchain to latest version" \
+		true toolchain-update "2) Update/Install SmartMDSD Toolchain to latest version" \
+		false menu-install "3) Install ACE/SmartSoft Development Environment and dependencies on a clean system*" \
+		true repo-up-smartsoft "4) Update ACE/SmartSoft Development Environment (updates repositories)" \
+		true build-smartsoft "5) Build/Compile ACE/SmartSoft Development Environment" \
+#		false svn-up-robotino "X) Update Robotino repositories" \
+#		false build-robotino "X) Build/Compile Robotino ACE/SmartSoft Components" \
 	) || exit 1
 
 	CMD=""
@@ -163,23 +163,23 @@ menu)
 # MENU INSTALL
 ###############################################################################
 menu-install)
-	zenity --question --text="ATTENTION:\n The script is about to install ACE/SmartSoft and dependency packages on this system. Only use this function on a clean installation of Ubuntu 16.04. Some of the following steps may not be execute twice without undoing them before.\n\nProceed?\n\n* Experimental support for Raspbian 8.0/Jessie available" || abort 
+	zenity --question --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
 
 	ACTION=$(zenity \
 		--title "Install ACE/SmartSoft and dependencies on a clean system" \
 		--text "Please select update actions to perform:\n" \
 		--list --checklist \
 		--height=270 \
-		--width=420 \
+		--width=520 \
 		--column="" --column=Action --column=Description \
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
 		false package-install "1.1) Install system packages required for ACE/SmartSoft" \
 		false ace-source-install "1.2) Install ACE from source" \
 		false repo-co-smartsoft "1.3) Checkout ACE/SmartSoft repository and set environment variables" \
-		false package-install-robotino "1.4) Install packages for robotino robot" \
-		false svn-co-robotino "1.5) Checkout ACE/SmartSoft repository for robotino robot" \
-        	false package-internal-install "1.6) Install additional generic packages (optional)"\
+        	false package-internal-install "1.4) Install additional generic packages (optional)"\
+#		false package-install-robotino "X) Install packages for robotino robot" \
+#		false svn-co-robotino "X) Checkout ACE/SmartSoft repository for robotino robot" \
 	) || abort
 
 	IFS='|';
@@ -326,7 +326,6 @@ package-upgrade)
 
 ###############################################################################
 # checkout Public repository
-# alex
 repo-co-smartsoft)
 	# check if we are in the lab and then ask wether to continue to install external stuff
 	# or quit and continue with internal stuff
@@ -340,8 +339,7 @@ repo-co-smartsoft)
 	echo -e "\n\n\n### Running repo checkout ...\n\n\n"
 	sleep 2
 
-	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3
-	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos
+	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v3 ~/SOFTWARE/smartsoft || askabort
 
 	echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
@@ -351,18 +349,14 @@ repo-co-smartsoft)
 
 	source ~/.profile 
 
-	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos
+	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
-	# clone ACE/SmartSoft
 	git clone https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework.git || askabort
-	# clone Utilities
 	git clone https://github.com/Servicerobotics-Ulm/UtilityRepository.git || askabort
-	# clone DataRepository
 	git clone https://github.com/Servicerobotics-Ulm/DataRepository.git || askabort
-	# clone DomainModels
 	git clone https://github.com/Servicerobotics-Ulm/DomainModelsRepositories.git || askabort
-	# clone Components
 	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
+	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
@@ -371,17 +365,44 @@ repo-co-smartsoft)
 
 ###############################################################################
 # checkout SRRC-Internal repository
-# todo alex
 repo-co-smartsoft-internal)
 	echo -e "\n\n\n### Running repo checkout (SRRC-INTERNAL REPOSITORIES) ...\n\n\n"
 	sleep 2
+
+
+	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
+	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v3 ~/SOFTWARE/smartsoft || askabort
+
+	echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
+	echo "export SMART_ROOT_ACE=\$HOME/SOFTWARE/smartsoft" >> ~/.profile
+	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/repos" >> ~/.profile
+	echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
+
+	source ~/.profile 
+
+	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
+
+	if ! [ -d "/mnt/ssh/robo/repositories/smartSoftDev_v3/" ]; then
+		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing. (you can keep this window open / the script active while doing so...)"
+	fi
+
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/AceSmartSoftFramework.git || askabort
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/UtilityRepository.git || askabort
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DataRepository.git || askabort
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DomainModelsRepositories.git || askabort
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/ComponentRepository.git || askabort
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SystemRepository.git || askabort
+
+	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
+
+	exit 0
 
 ;;
 
 ###############################################################################
 # update alex
 repo-up-smartsoft)
-	echo -e "\n\n\n### Running ACE/SmartSoft SVN update ...\n\n\n"
+	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
 	sleep 2
 
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
