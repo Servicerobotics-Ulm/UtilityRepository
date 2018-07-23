@@ -84,6 +84,7 @@ COMMIT='$Id$'
 echo "Update Script git=$COMMIT"
 
 function abort() {
+	echo 100 > /tmp/install-msg.log
 	echo -e "\n\n### Aborted.\nYou can find a logfile in your current working directory:\n"
 	pwd
 	kill `cat /tmp/smartsoft-install-update.pid`
@@ -93,6 +94,13 @@ function askabort() {
 	if zenity --question --text="An error occurred (see log file). Abort update script?\n"; then
 		abort
 	fi
+}
+
+function progressbarinfo() {
+	echo "# $1" > /tmp/install-msg.log
+	echo -e "\n\n"
+	echo "# $1"
+	echo -e "\n\n"
 }
 
 if `grep --ignore-case precise /etc/os-release > /dev/null`; then 
@@ -151,8 +159,11 @@ menu)
 		CMD="$CMD bash $SCRIPT_NAME $A || askabort;"
 	done
 	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
-	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
+	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo 100 > /tmp/install-msg.log;echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
 	echo $! > /tmp/smartsoft-install-update.pid
+
+	tail -f /tmp/install-msg.log | zenity --progress --title="Installing ..." --auto-close --text="Starting ..." --pulsate --width=500
+	progressbarinfo "Starting ..."
 
 	#echo -e "icon:info\ntooltip:Update script finished."|zenity --notification --listen &
 
@@ -190,6 +201,7 @@ menu-install)
 	echo
 	echo
 	echo '### Install script finished.'
+	progressbarinfo "Finished"
 	echo
 	echo
 
@@ -207,7 +219,9 @@ ace-source-install)
 		exit 0
 	fi
 
-	echo -e "\n\n\n### Running ACE source install (will take some time) ...\n\n\n"
+
+	progressbarinfo "Running ACE source install (will take some time)"
+
 	sleep 2
 
 	wget -nv https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework/raw/master/INSTALL-ACE-6.0.2.sh -O /tmp/INSTALL-ACE-6.0.2.sh || askabort
@@ -227,19 +241,26 @@ package-install)
 		exit 0
 	fi
 
-	echo -e "\n\n\n### Running package install ...\n\n\n"
+
+	progressbarinfo "Running package install ..."
+
 	sleep 2
+	progressbarinfo "Running apt-get update, upgrade ..."
 	apt-get update || askabort
 
 	apt-get -y --force-yes update || askabort
 	apt-get -y --force-yes upgrade || askabort
 
+	progressbarinfo "Installing packages ..."
 	# General packages:
 	apt-get -y --force-yes install git flex bison htop tree cmake cmake-curses-gui subversion sbcl doxygen \
  meld expect wmctrl libopencv-dev libboost-all-dev libftdi-dev libcv-dev libcvaux-dev libhighgui-dev \
  build-essential pkg-config freeglut3-dev zlib1g-dev zlibc libusb-1.0-0-dev libdc1394-22-dev libavformat-dev libswscale-dev \
  lib3ds-dev libjpeg-dev libgtest-dev libeigen3-dev libglew-dev vim vim-gnome libxml2-dev libxml++2.6-dev libmrpt-dev ssh sshfs xterm libjansson-dev || askabort
+
 	
+	progressbarinfo "Installing OS-specific packages ..."
+
 	# 12.04 packages
 	if [ "$OS_PRECISE" = true ]; then
 		apt-get -y --force-yes install libwxgtk2.8-dev openjdk-6-jre libtbb-dev || askabort
@@ -266,7 +287,7 @@ package-internal-install)
 		exit 0
 	fi
 
-	echo -e "\n\n\n### Running package install ...\n\n\n"
+	progressbarinfo	"Running internal package install ..."
 	sleep 2
 	apt-get update || askabort
 
@@ -337,7 +358,8 @@ repo-co-smartsoft)
 		fi
 	fi
 
-	echo -e "\n\n\n### Running repo checkout ...\n\n\n"
+	progressbarinfo "Cloning repositories"
+
 	sleep 2
 
 	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
@@ -352,11 +374,17 @@ repo-co-smartsoft)
 
 	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
+	progressbarinfo "Cloning repositories: AceSmartSoftFramework.git"
 	git clone https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework.git || askabort
+	progressbarinfo "Cloning repositories: UtilityRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/UtilityRepository.git || askabort
+	progressbarinfo "Cloning repositories: DataRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/DataRepository.git || askabort
+	progressbarinfo "Cloning repositories: DomainModelsRepositories.git"
 	git clone https://github.com/Servicerobotics-Ulm/DomainModelsRepositories.git || askabort
+	progressbarinfo "Cloning repositories: ComponentRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
+	progressbarinfo "Cloning repositories: SystemRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
@@ -370,6 +398,7 @@ repo-co-smartsoft-internal)
 	echo -e "\n\n\n### Running repo checkout (SRRC-INTERNAL REPOSITORIES) ...\n\n\n"
 	sleep 2
 
+	progressbarinfo "Cloning repositories"
 
 	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v3 ~/SOFTWARE/smartsoft || askabort
@@ -384,14 +413,20 @@ repo-co-smartsoft-internal)
 	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
 	if ! [ -d "/mnt/ssh/robo/repositories/smartSoftDev_v3/" ]; then
-		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing. (you can keep this window open / the script active while doing so...)"
+		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing.\n(you can keep this window open / the script active while doing so...)"
 	fi
 
+	progressbarinfo "Cloning repositories: AceSmartSoftFramework.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/AceSmartSoftFramework.git || askabort
+	progressbarinfo "Cloning repositories: UtilityRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/UtilityRepository.git || askabort
+	progressbarinfo "Cloning repositories: DataRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DataRepository.git || askabort
+	progressbarinfo "Cloning repositories: DomainModelsRepositories.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DomainModelsRepositories.git || askabort
+	progressbarinfo "Cloning repositories: ComponentRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/ComponentRepository.git || askabort
+	progressbarinfo "Cloning repositories: SystemRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SystemRepository.git || askabort
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
@@ -406,14 +441,19 @@ repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
 	sleep 2
 
+	progressbarinfo "Running ACE/SmartSoft repo update: AceSmartSoftFramework"
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
 	git pull || askabort
+	progressbarinfo "Running ACE/SmartSoft repo update: UtilityRepository"
 	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
 	git pull || askabort
+	progressbarinfo "Running ACE/SmartSoft repo update: DataRepository"
 	cd $SMART_ROOT_ACE/repos/DataRepository || askabort
 	git pull || askabort
+	progressbarinfo "Running ACE/SmartSoft repo update: DomainModelsRepositories"
 	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
 	git pull || askabort
+	progressbarinfo "Running ACE/SmartSoft repo update: ComponentRepository"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
 	git pull || askabort
 
@@ -425,7 +465,7 @@ build-smartsoft)
 	echo -e "\n\n\n### Running Build ACE/SmartSoft ...\n\n\n"
 	sleep 2
 
-	echo -e "\n\n\n### Running Build ACE/SmartSoft Kernel ...\n\n\n"
+	progressbarinfo "Running Build ACE/SmartSoft Kernel ..."
 	# warkaround for the case when the kernel is not built automatically as external dependency
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
 	mkdir build
@@ -433,21 +473,21 @@ build-smartsoft)
 	cmake ..
 	make install || askabort
 
-	echo -e "\n\n### Running Build Utilities"
+	progressbarinfo "Running Build Utilities"
 	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
 	mkdir build
 	cd build || askabort
 	cmake ..
 	make || askabort
 
-	echo -e "\n\n### Running Build DomainModels"
+	progressbarinfo "Running Build DomainModels"
 	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
 	mkdir build
 	cd build || askabort
 	cmake ..
 	make || askabort
 
-	echo -e "\n\n### Running Build Components"
+	progressbarinfo "Running Build Components"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
 	mkdir build
 	cd build || askabort
@@ -500,14 +540,14 @@ build-robotino)
 
 ###############################################################################
 toolchain-update)
-	echo -e "\n\n\n### Running toolchain update ...\n\n\n"
+	progressbarinfo "Running toolchain update ..."
 	sleep 2
 
 	TC_DOWNLOAD=`tempfile`
-	echo -e "\n# Downloading toolchain...\n"
+	progressbarinfo "Downloading toolchain..."
 	wget --progress=dot:mega --content-disposition $TOOLCHAIN_LATEST_URL -O $TC_DOWNLOAD || askabort
 
-	echo -e "\n# Setting up toolchain...\n"
+	progressbarinfo "Setting up toolchain..."
 
 	mv ~/SOFTWARE/SmartMDSD_Toolchain.latest ~/SOFTWARE/SmartMDSD_Toolchain.`date +%Y-%m-%d` 
 	mkdir -p ~/SOFTWARE/SmartMDSD_Toolchain.latest 
@@ -516,6 +556,9 @@ toolchain-update)
 	#TCNAME=$(ls * | sed "s/\.tar.*//g" | sed "s/\.bz2.*//g")
 	tar xf $TC_DOWNLOAD || askabort
 	EXECUTABLE=`pwd`/$(find ./ -name eclipse -type f)
+	ICON=`pwd`/$(find ./ -name icon.xpm -type f)
+
+
 	echo "Toolchain executable is: $EXECUTABLE"
 	
 	echo -e "\n# Setting up workspace path ...\n"
@@ -527,7 +570,7 @@ SHOW_WORKSPACE_SELECTION_DIALOG=true
 eclipse.preferences.version=1
 " > $IDEPREFS
 
-	echo -e "\n# Creating desktop starter ...\n"
+	progressbarinfo "Creating desktop starter ..."
 echo "[Desktop Entry]
 Encoding=UTF-8
 Version=1.0
@@ -535,7 +578,7 @@ Name=SmartMDSD Toolchain
 Comment=Starts the latest version of the SmartMDSD Toolchain
 Type=Application
 Exec=$EXECUTABLE
-Icon=
+Icon=$ICON
 " > ~/Desktop/SmartMDSDToolchain.desktop
 	chmod +x ~/Desktop/SmartMDSDToolchain.desktop
 	exit 0
@@ -555,7 +598,7 @@ vm-update)
 	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
 		bash $SCRIPT_NAME script-update
 	else
-		echo -e "\n\n\n# Not updating the script before running it.\n\n\n"
+		progressbarinfo "Not updating the script before running it."
 	fi
 
 	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft"
@@ -566,7 +609,8 @@ vm-update)
 		CMD="echo $CMD bash $SCRIPT_NAME $A || askabort;"
 	done
 	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
-	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
+	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo 100 > /tmp/install-msg.log;echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
+
 	echo $! > /tmp/smartsoft-install-update.pid
 
 ;;
@@ -576,7 +620,7 @@ vm-update)
 # Update the installation script
 ###############################################################################
 script-update)
-	echo -e "\n\n\n### Updating the script before starting it ...\n\n\n"
+	progressbarinfo "Updating the script before starting it ..."
 	T=`tempfile`
 	echo "Tempfile: $T"
 	
