@@ -129,7 +129,7 @@ menu)
 
 	ACTION=$(zenity \
 		--title "SmartSoft Install & Update Script" \
-		--text "This is the automatic installation script for the SmartSoft World (v3-generation). Depending\non your selection, it will install the SmartMDSD Toolchain with a full development environment.\n\nPlease select update actions to perform:\n\n* action uses sudo" \
+		--text "This is the automatic installation script for the SmartSoft World (v3-generation). The default selection will install the SmartMDSD Toolchain with a full ACE/SmartSoft development environment.\n\nPlease select update actions to perform:\n\n* action uses sudo" \
 		--list --checklist \
 		--height=350 \
 		--width=430 \
@@ -138,7 +138,7 @@ menu)
 		--separator="|" \
 		true package-upgrade "1) Upgrade system packages*" \
 		true toolchain-update "2) Update/Install SmartMDSD Toolchain to latest version" \
-		false menu-install "3) Install ACE/SmartSoft Development Environment and dependencies on a clean system*" \
+		true menu-install "3) Install ACE/SmartSoft Development Environment and dependencies on a clean system*" \
 		true repo-up-smartsoft "4) Update ACE/SmartSoft Development Environment (updates repositories)" \
 		true build-smartsoft "5) Build/Compile ACE/SmartSoft Development Environment" \
 #		false svn-up-robotino "X) Update Robotino repositories" \
@@ -167,20 +167,21 @@ menu-install)
 
 	ACTION=$(zenity \
 		--title "Install ACE/SmartSoft and dependencies on a clean system" \
-		--text "Please select update actions to perform:\n" \
+		--text "About to install a development environment.\nPlease select update actions to perform:\n" \
 		--list --checklist \
 		--height=270 \
-		--width=520 \
+		--width=620 \
 		--column="" --column=Action --column=Description \
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
-		false package-install "1.1) Install system packages required for ACE/SmartSoft" \
-		false ace-source-install "1.2) Install ACE from source" \
-		false repo-co-smartsoft "1.3) Checkout ACE/SmartSoft repository and set environment variables" \
-        	false package-internal-install "1.4) Install additional generic packages (optional)"\
+		true package-install "1.1) Install system packages required for ACE/SmartSoft" \
+		true ace-source-install "1.2) Install ACE from source" \
+		true repo-co-smartsoft "1.3) Checkout ACE/SmartSoft repository and set environment variables" \
+        	false package-internal-install "1.4) Install additional generic packages (optional)" \
 #		false package-install-robotino "X) Install packages for robotino robot" \
 #		false svn-co-robotino "X) Checkout ACE/SmartSoft repository for robotino robot" \
 	) || abort
+
 
 	IFS='|';
 	for A in $ACTION; do
@@ -358,7 +359,7 @@ repo-co-smartsoft)
 	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
-	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
+	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
 	exit 0
 ;;
@@ -420,7 +421,6 @@ repo-up-smartsoft)
 ;;
 
 ###############################################################################
-# TODO alex
 build-smartsoft)
 	echo -e "\n\n\n### Running Build ACE/SmartSoft ...\n\n\n"
 	sleep 2
@@ -499,7 +499,6 @@ build-robotino)
 ;;
 
 ###############################################################################
-# todo dennis
 toolchain-update)
 	echo -e "\n\n\n### Running toolchain update ...\n\n\n"
 	sleep 2
@@ -540,6 +539,31 @@ Icon=
 " > ~/Desktop/SmartMDSDToolchain.desktop
 	chmod +x ~/Desktop/SmartMDSDToolchain.desktop
 	exit 0
+;;
+
+
+###############################################################################
+# Update the virtual machine. Only run from within the vm!
+###############################################################################
+vm-update)
+
+	if [ "$(hostname)" != "smartsoft-vm" ]; then
+		echo "Virtual machine was not detected."
+		zenity --question --text="<b>Warning</b>: Virtual machine was not detected.\nOnly run this action from within the virtual machine.\n\nDo you want to proceed at your own risk?" || abort
+	fi
+
+	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft"
+
+	CMD=""
+	IFS='|';
+	for A in $ACTION; do
+		#CMD="echo $CMD bash $SCRIPT_NAME $A || askabort;"
+		echo $ACTION
+	done
+	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
+	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
+	echo $! > /tmp/smartsoft-install-update.pid
+
 ;;
 
 
