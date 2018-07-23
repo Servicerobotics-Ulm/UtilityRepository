@@ -552,13 +552,18 @@ vm-update)
 		zenity --question --text="<b>Warning</b>: Virtual machine was not detected.\nOnly run this action from within the virtual machine.\n\nDo you want to proceed at your own risk?" || abort
 	fi
 
+	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
+		bash $SCRIPT_NAME script-update
+	else
+		echo -e "\n\n\n# Not updating the script before running it.\n\n\n"
+	fi
+
 	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft"
 
 	CMD=""
 	IFS='|';
 	for A in $ACTION; do
-		#CMD="echo $CMD bash $SCRIPT_NAME $A || askabort;"
-		echo $ACTION
+		CMD="echo $CMD bash $SCRIPT_NAME $A || askabort;"
 	done
 	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
 	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
