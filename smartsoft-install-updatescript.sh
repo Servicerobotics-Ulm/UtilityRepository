@@ -162,8 +162,8 @@ menu)
 	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo 100 > /tmp/install-msg.log;echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
 	echo $! > /tmp/smartsoft-install-update.pid
 
-	tail -f /tmp/install-msg.log | zenity --progress --title="Installing ..." --auto-close --text="Starting ..." --pulsate --width=500
 	progressbarinfo "Starting ..."
+	tail -f /tmp/install-msg.log | zenity --progress --title="Installing ..." --auto-close --text="Starting ..." --pulsate --width=500 &
 
 	#echo -e "icon:info\ntooltip:Update script finished."|zenity --notification --listen &
 
@@ -174,6 +174,8 @@ menu)
 # MENU INSTALL
 ###############################################################################
 menu-install)
+	progressbarinfo "Launching installation menu for ACE/SmartSoft"
+
 	zenity --question --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
 
 	ACTION=$(zenity \
@@ -205,13 +207,12 @@ menu-install)
 	echo
 	echo
 
-	echo -e "icon:info\ntooltip:Installation script finished." | zenity --notification --listen &
+	#echo -e "icon:info\ntooltip:Installation script finished." | zenity --notification --listen &
 
 	exit 0
 ;;
 
 ###############################################################################
-# ALEX
 ace-source-install)
 	# become root
 	if [ "$(id -u)" != "0" ]; then
@@ -246,8 +247,6 @@ package-install)
 
 	sleep 2
 	progressbarinfo "Running apt-get update, upgrade ..."
-	apt-get update || askabort
-
 	apt-get -y --force-yes update || askabort
 	apt-get -y --force-yes upgrade || askabort
 
@@ -337,11 +336,11 @@ package-upgrade)
 		exit 0
 	fi
 
-	echo -e "\n\n\n### Running package upgrade ...\n\n\n"
+	progressbarinfo "Updating system packages ... (apt-get update)"
 	sleep 2
-	apt-get update || askabort
-
 	apt-get -y --force-yes update || askabort
+
+	progressbarinfo "Updating system packages ... (apt-get upgrade)"
 	apt-get -y --force-yes upgrade || askabort
 	exit 0
 ;;
@@ -387,7 +386,7 @@ repo-co-smartsoft)
 	progressbarinfo "Cloning repositories: SystemRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
-	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
+	zenity --info --text="Environment settings in .profile have been changed. In order to use them, \ndo one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
 	exit 0
 ;;
@@ -436,7 +435,6 @@ repo-co-smartsoft-internal)
 ;;
 
 ###############################################################################
-# update alex
 repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
 	sleep 2
@@ -544,10 +542,10 @@ toolchain-update)
 	sleep 2
 
 	TC_DOWNLOAD=`tempfile`
-	progressbarinfo "Downloading toolchain..."
+	progressbarinfo "Downloading SmartMDSD Toolchain ..."
 	wget --progress=dot:mega --content-disposition $TOOLCHAIN_LATEST_URL -O $TC_DOWNLOAD || askabort
 
-	progressbarinfo "Setting up toolchain..."
+	progressbarinfo "Setting up SmartMDSD Toolchain ..."
 
 	mv ~/SOFTWARE/SmartMDSD_Toolchain.latest ~/SOFTWARE/SmartMDSD_Toolchain.`date +%Y-%m-%d` 
 	mkdir -p ~/SOFTWARE/SmartMDSD_Toolchain.latest 
@@ -600,6 +598,9 @@ vm-update)
 	else
 		progressbarinfo "Not updating the script before running it."
 	fi
+
+	progressbarinfo "Starting ..."
+	tail -f /tmp/install-msg.log | zenity --progress --title="Installing ..." --auto-close --text="Starting ..." --pulsate --width=500 &
 
 	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft"
 
