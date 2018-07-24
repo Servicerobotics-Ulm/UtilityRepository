@@ -137,7 +137,7 @@ menu)
 
 	ACTION=$(zenity \
 		--title "SmartSoft Install & Update Script" \
-		--text "This is the automatic installation script for the SmartSoft World (v3-generation).\nThe default selection will install the SmartMDSD Toolchain with a full ACE/SmartSoft development environment.\n\nPlease select update actions to perform:\n\n* action uses sudo" \
+		--text "This is the automatic installation script for the SmartSoft World (v3-generation).\nThe default selection will install the SmartMDSD Toolchain with a full ACE/SmartSoft development environment.\n\nPlease select update actions to perform:\n\n* uses sudo: enter your password to the terminal window that pops up next." \
 		--list --checklist \
 		--height=350 \
 		--width=430 \
