@@ -595,6 +595,7 @@ vm-update)
 
 	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
 		bash $SCRIPT_NAME script-update
+		exit 0
 	else
 		progressbarinfo "Not updating the script before running it."
 	fi
@@ -669,6 +670,9 @@ script-update)
 	echo -e "\n # Test OK"
 
 	mv $T $SCRIPT_NAME
+
+	zenity --info --text="Script has been updated. Please restart the script."
+
 	exit 0
 ;;
 
@@ -689,6 +693,7 @@ start)
 *)
 	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
 		bash $SCRIPT_NAME script-update
+		exit 0
 	else
 		echo -e "\n\n\n# Not updating the script before running it.\n\n\n"
 	fi
