@@ -602,7 +602,7 @@ vm-update)
 	progressbarinfo "Starting ..."
 	tail -f /tmp/install-msg.log | zenity --progress --title="Installing ..." --auto-close --text="Starting ..." --pulsate --width=500 &
 
-	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft"
+	ACTION="toolchain-update|repo-up-smartsoft|build-smartsoft|vm-update-compile"
 
 	CMD=""
 	IFS='|';
@@ -614,6 +614,33 @@ vm-update)
 
 	echo $! > /tmp/smartsoft-install-update.pid
 
+	exit 0
+;;
+
+# compiles vm specific components
+vm-update-compile)
+
+	progressbarinfo "Compiling vm-specific components ..."
+	sleep 2
+
+	progressbarinfo "Compiling vm-specific components: Player Stage Component"
+	cd $SMART_ROOT_ACE/repos/ComponentRepository/ComponentPlayerStageSimulator/smartsoft/ || askabort
+	mkdir build
+	cd build || askabort
+	cmake .. || askabort
+	make || askabort
+
+	progressbarinfo "Compiling vm-specific components: Gazebo Simulator Component"
+	cd $SMART_ROOT_ACE/repos/ComponentRepository/SmartGazeboBaseServer/smartsoft/ || askabort
+	mkdir build
+	cd build || askabort
+	cmake .. || askabort
+	make || askabort
+
+	progressbarinfo "Compiling vm-specific components: Done."
+	sleep 1
+
+	exit 0
 ;;
 
 
@@ -642,6 +669,7 @@ script-update)
 	echo -e "\n # Test OK"
 
 	mv $T $0
+	exit 0
 ;;
 
 
