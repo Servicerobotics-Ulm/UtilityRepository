@@ -55,8 +55,8 @@
 # Matthias Lutz 00.12.2016
 # Ununtu 16.04 as supported OS
 #
-# Dennis Stampfer 19.7.2018
-# Adoption of skeleton to v3-generation of SmartSoft World
+# Dennis Stampfer 23.7.2018
+# Adoption to v3-generation of SmartSoft World
 #
 #
 #
@@ -373,17 +373,17 @@ repo-co-smartsoft)
 
 	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
-	progressbarinfo "Cloning repositories: AceSmartSoftFramework.git"
+	progressbarinfo "Cloning repositories AceSmartSoftFramework.git"
 	git clone https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework.git || askabort
-	progressbarinfo "Cloning repositories: UtilityRepository.git"
+	progressbarinfo "Cloning repositories UtilityRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/UtilityRepository.git || askabort
-	progressbarinfo "Cloning repositories: DataRepository.git"
+	progressbarinfo "Cloning repositories DataRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/DataRepository.git || askabort
-	progressbarinfo "Cloning repositories: DomainModelsRepositories.git"
+	progressbarinfo "Cloning repositories DomainModelsRepositories.git"
 	git clone https://github.com/Servicerobotics-Ulm/DomainModelsRepositories.git || askabort
-	progressbarinfo "Cloning repositories: ComponentRepository.git"
+	progressbarinfo "Cloning repositories ComponentRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
-	progressbarinfo "Cloning repositories: SystemRepository.git"
+	progressbarinfo "Cloning repositories SystemRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, \ndo one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
@@ -415,17 +415,17 @@ repo-co-smartsoft-internal)
 		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing.\n(you can keep this window open / the script active while doing so...)"
 	fi
 
-	progressbarinfo "Cloning repositories: AceSmartSoftFramework.git"
+	progressbarinfo "Cloning repositories AceSmartSoftFramework.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/AceSmartSoftFramework.git || askabort
-	progressbarinfo "Cloning repositories: UtilityRepository.git"
+	progressbarinfo "Cloning repositories UtilityRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/UtilityRepository.git || askabort
-	progressbarinfo "Cloning repositories: DataRepository.git"
+	progressbarinfo "Cloning repositories DataRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DataRepository.git || askabort
-	progressbarinfo "Cloning repositories: DomainModelsRepositories.git"
+	progressbarinfo "Cloning repositories DomainModelsRepositories.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DomainModelsRepositories.git || askabort
-	progressbarinfo "Cloning repositories: ComponentRepository.git"
+	progressbarinfo "Cloning repositories ComponentRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/ComponentRepository.git || askabort
-	progressbarinfo "Cloning repositories: SystemRepository.git"
+	progressbarinfo "Cloning repositories SystemRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SystemRepository.git || askabort
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
@@ -439,19 +439,19 @@ repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
 	sleep 2
 
-	progressbarinfo "Running ACE/SmartSoft repo update: AceSmartSoftFramework"
+	progressbarinfo "Running ACE/SmartSoft repo update AceSmartSoftFramework"
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
 	git pull || askabort
-	progressbarinfo "Running ACE/SmartSoft repo update: UtilityRepository"
+	progressbarinfo "Running ACE/SmartSoft repo update UtilityRepository"
 	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
 	git pull || askabort
-	progressbarinfo "Running ACE/SmartSoft repo update: DataRepository"
+	progressbarinfo "Running ACE/SmartSoft repo update DataRepository"
 	cd $SMART_ROOT_ACE/repos/DataRepository || askabort
 	git pull || askabort
-	progressbarinfo "Running ACE/SmartSoft repo update: DomainModelsRepositories"
+	progressbarinfo "Running ACE/SmartSoft repo update DomainModelsRepositories"
 	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
 	git pull || askabort
-	progressbarinfo "Running ACE/SmartSoft repo update: ComponentRepository"
+	progressbarinfo "Running ACE/SmartSoft repo update ComponentRepository"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
 	git pull || askabort
 
@@ -538,7 +538,7 @@ build-robotino)
 
 ###############################################################################
 toolchain-update)
-	progressbarinfo "Running toolchain update ..."
+	progressbarinfo "Running toolchain installation ..."
 	sleep 2
 
 	TC_DOWNLOAD=`tempfile`
@@ -623,21 +623,21 @@ vm-update-compile)
 	progressbarinfo "Compiling vm-specific components ..."
 	sleep 2
 
-	progressbarinfo "Compiling vm-specific components: Player Stage Component"
+	progressbarinfo "Compiling Player Stage Component"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository/ComponentPlayerStageSimulator/smartsoft/ || askabort
 	mkdir build
 	cd build || askabort
 	cmake .. || askabort
 	make || askabort
 
-	progressbarinfo "Compiling vm-specific components: Gazebo Simulator Component"
+	progressbarinfo "Compiling Gazebo Simulator Component"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository/SmartGazeboBaseServer/smartsoft/ || askabort
 	mkdir build
 	cd build || askabort
 	cmake .. || askabort
 	make || askabort
 
-	progressbarinfo "Compiling vm-specific components: Done."
+	progressbarinfo "Compiling vm-specific components ... Done."
 	sleep 1
 
 	exit 0
@@ -668,7 +668,7 @@ script-update)
 	fi
 	echo -e "\n # Test OK"
 
-	mv $T $0
+	mv $T $SCRIPT_NAME
 	exit 0
 ;;
 
