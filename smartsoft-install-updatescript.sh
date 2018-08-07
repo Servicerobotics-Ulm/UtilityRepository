@@ -686,6 +686,13 @@ vm-update-compile)
 	cmake .. || askabort
 	make || askabort
 
+	progressbarinfo "Compiling ComponentLaserObstacleAvoid"
+	cd $SMART_ROOT_ACE/repos/ComponentRepository/ComponentLaserObstacleAvoid/smartsoft/ || askabort
+	mkdir build
+	cd build || askabort
+	cmake .. || askabort
+	make || askabort
+
 	progressbarinfo "Compiling vm-specific components ... Done."
 	sleep 1
 
