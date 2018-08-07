@@ -58,6 +58,9 @@
 # Dennis Stampfer 23.7.2018
 # Adoption to v3-generation of SmartSoft World
 #
+# Dennis Stampfer, Alex Lotz 7.8.2018
+# Update of Component Developer API way of installation
+#
 #
 #
 #
@@ -373,6 +376,8 @@ repo-co-smartsoft)
 
 	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
+	progressbarinfo "Cloning repositories SmartSoftComponentDeveloperAPIcpp.git"
+	git clone https://github.com/Servicerobotics-Ulm/SmartSoftComponentDeveloperAPIcpp.git || askabort
 	progressbarinfo "Cloning repositories AceSmartSoftFramework.git"
 	git clone https://github.com/Servicerobotics-Ulm/AceSmartSoftFramework.git || askabort
 	progressbarinfo "Cloning repositories UtilityRepository.git"
@@ -385,6 +390,7 @@ repo-co-smartsoft)
 	git clone https://github.com/Servicerobotics-Ulm/ComponentRepository.git || askabort
 	progressbarinfo "Cloning repositories SystemRepository.git"
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
+
 
 	zenity --info --text="Environment settings in .profile have been changed. In order to use them, \ndo one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
@@ -415,6 +421,8 @@ repo-co-smartsoft-internal)
 		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing.\n(you can keep this window open / the script active while doing so...)"
 	fi
 
+	progressbarinfo "Cloning repositories SmartSoftComponentDeveloperAPIcpp.git.git"
+	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SmartSoftComponentDeveloperAPIcpp.git || askabort
 	progressbarinfo "Cloning repositories AceSmartSoftFramework.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/AceSmartSoftFramework.git || askabort
 	progressbarinfo "Cloning repositories UtilityRepository.git"
@@ -439,6 +447,9 @@ repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
 	sleep 2
 
+	progressbarinfo "Running ACE/SmartSoft repo update SmartSoftComponentDeveloperAPIcpp"
+	cd $SMART_ROOT_ACE/repos/SmartSoftComponentDeveloperAPIcpp || askabort
+	git pull || askabort
 	progressbarinfo "Running ACE/SmartSoft repo update AceSmartSoftFramework"
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
 	git pull || askabort
@@ -462,6 +473,13 @@ repo-up-smartsoft)
 build-smartsoft)
 	echo -e "\n\n\n### Running Build ACE/SmartSoft ...\n\n\n"
 	sleep 2
+
+	progressbarinfo "Running Build ACE/SmartSoft SmartSoftComponentDeveloperAPIcpp ..."
+	cd $SMART_ROOT_ACE/repos/SmartSoftComponentDeveloperAPIcpp || askabort
+	mkdir build
+	cd build || askabort
+	cmake ..
+	make install || askabort
 
 	progressbarinfo "Running Build ACE/SmartSoft Kernel ..."
 	# warkaround for the case when the kernel is not built automatically as external dependency
@@ -671,7 +689,7 @@ script-update)
 
 	mv $T $SCRIPT_NAME
 
-	zenity --info --text="Script has been updated. Please restart the script."
+	zenity --info --text="Update finished. Please restart the\ninstallation script (and choose not to update)."
 
 	exit 0
 ;;
@@ -691,7 +709,7 @@ start)
 
 ###############################################################################
 *)
-	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
+	if zenity --question --text="This installation and update script has an updater included.\nDo you want to update this script before continuing?\n\nUpdate location:\n$SCRIPT_UPDATE_URL\n"; then
 		bash $SCRIPT_NAME script-update
 		exit 0
 	else
