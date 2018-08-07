@@ -445,25 +445,44 @@ repo-co-smartsoft-internal)
 ###############################################################################
 repo-up-smartsoft)
 	echo -e "\n\n\n### Running ACE/SmartSoft repo update ...\n\n\n"
+	progressbarinfo "About to update repositories ..."
 	sleep 2
+
+	if zenity --question --text="The installation script is about to update the repositories.\nThis will <b>overwrite all your modifications</b> that you did to the repositories in \$SMART_ROOT_ACE/repos/.\n\nDo you want to proceed?\n\nIt is safe to do so in case you did not modify SmartMDSD Toolchain projects or don't need the modifications anymore.\nIf you choose not to update, please do a 'git pull' for the repositories yourself."; then
+		echo -e "\n\n\n# Continuing with repo update.\n\n\n"
+	else
+		echo -e "\n\n\n# Not running repo update.\n\n\n"
+		exit 0
+	fi
 
 	progressbarinfo "Running ACE/SmartSoft repo update SmartSoftComponentDeveloperAPIcpp"
 	cd $SMART_ROOT_ACE/repos/SmartSoftComponentDeveloperAPIcpp || askabort
+	git reset --hard HEAD
 	git pull || askabort
+
 	progressbarinfo "Running ACE/SmartSoft repo update AceSmartSoftFramework"
 	cd $SMART_ROOT_ACE/repos/AceSmartSoftFramework || askabort
+	git reset --hard HEAD
 	git pull || askabort
+
 	progressbarinfo "Running ACE/SmartSoft repo update UtilityRepository"
 	cd $SMART_ROOT_ACE/repos/UtilityRepository || askabort
+	git reset --hard HEAD
 	git pull || askabort
+
 	progressbarinfo "Running ACE/SmartSoft repo update DataRepository"
 	cd $SMART_ROOT_ACE/repos/DataRepository || askabort
+	git reset --hard HEAD
 	git pull || askabort
+
 	progressbarinfo "Running ACE/SmartSoft repo update DomainModelsRepositories"
 	cd $SMART_ROOT_ACE/repos/DomainModelsRepositories || askabort
+	git reset --hard HEAD
 	git pull || askabort
+
 	progressbarinfo "Running ACE/SmartSoft repo update ComponentRepository"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
+	git reset --hard HEAD
 	git pull || askabort
 
 	exit 0
