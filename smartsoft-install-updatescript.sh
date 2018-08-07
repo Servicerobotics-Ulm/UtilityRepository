@@ -645,7 +645,7 @@ vm-update)
 	CMD=""
 	IFS='|';
 	for A in $ACTION; do
-		CMD="echo $CMD bash $SCRIPT_NAME $A || askabort;"
+		CMD="$CMD bash $SCRIPT_NAME $A || askabort;"
 	done
 	LOGFILE=`basename $0`.`date +"%Y%m%d%H%M"`.log
 	xterm -title "Updating..." -hold -e "exec > >(tee $LOGFILE); exec 2>&1; echo '### Update script start (git=$COMMIT)'; date; echo 'Logfile: $LOGFILE'; $CMD echo;echo;echo '### Update script finished. Logfile: $LOGFILE';echo 100 > /tmp/install-msg.log;echo;echo;rm /tmp/smartsoft-install-update.pid; date" &
