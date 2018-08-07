@@ -423,16 +423,22 @@ repo-co-smartsoft-internal)
 
 	progressbarinfo "Cloning repositories SmartSoftComponentDeveloperAPIcpp.git.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SmartSoftComponentDeveloperAPIcpp.git || askabort
+
 	progressbarinfo "Cloning repositories AceSmartSoftFramework.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/AceSmartSoftFramework.git || askabort
+
 	progressbarinfo "Cloning repositories UtilityRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/UtilityRepository.git || askabort
+
 	progressbarinfo "Cloning repositories DataRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DataRepository.git || askabort
+
 	progressbarinfo "Cloning repositories DomainModelsRepositories.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/DomainModelsRepositories.git || askabort
+
 	progressbarinfo "Cloning repositories ComponentRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/ComponentRepository.git || askabort
+
 	progressbarinfo "Cloning repositories SystemRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SystemRepository.git || askabort
 
@@ -482,6 +488,11 @@ repo-up-smartsoft)
 
 	progressbarinfo "Running ACE/SmartSoft repo update ComponentRepository"
 	cd $SMART_ROOT_ACE/repos/ComponentRepository || askabort
+	git reset --hard HEAD
+	git pull || askabort
+
+	progressbarinfo "Running ACE/SmartSoft repo update SystemRepository"
+	cd $SMART_ROOT_ACE/repos/SystemRepository || askabort
 	git reset --hard HEAD
 	git pull || askabort
 
