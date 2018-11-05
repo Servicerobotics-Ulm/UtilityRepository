@@ -61,6 +61,8 @@
 # Dennis Stampfer, Alex Lotz 7.8.2018
 # Update of Component Developer API way of installation
 #
+# Dennis Stampfer 5.11.2018
+# Fixing an issue with "source .profile" with custom prompts
 #
 #
 #
@@ -72,6 +74,7 @@ if [ "$1" == "script-update-test" ]; then
 	echo "ok"
 	exit 0
 fi
+BCMD=$1 #fixes overwriting of prompt in .bashrc which we will source' later.
 ################################
 # Insert code after here
 ################################
@@ -124,7 +127,7 @@ fi
 
 
 
-case "$1" in
+case "$BCMD" in
 
 ###############################################################################
 # MENU
