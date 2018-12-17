@@ -61,9 +61,11 @@
 # Dennis Stampfer, Alex Lotz 7.8.2018
 # Update of Component Developer API way of installation
 #
+# Dennis Stampfer 9 2018
+# Adoption to work on raspberry pi
+#
 # Dennis Stampfer 5.11.2018
 # Fixing an issue with "source .profile" with custom prompts
-#
 #
 #
 #
@@ -97,7 +99,7 @@ function abort() {
 }
 
 function askabort() {
-	if zenity --question --text="An error occurred (see log file). Abort update script?\n"; then
+	if zenity --width=400 --question --text="An error occurred (see log file). Abort update script?\n"; then
 		abort
 	fi
 }
@@ -127,6 +129,24 @@ fi
 
 
 
+
+
+if ! [ -x "$(command -v xterm)" ]; then
+	echo
+	echo "ERROR: xterm not found. Install using 'sudo apt-get install xterm'"
+	echo
+	exit
+fi
+
+
+if ! [ -x "$(command -v zenity)" ]; then
+	echo
+	echo "ERROR: zenity not found. Install using 'sudo apt-get install zenity'"
+	echo
+	exit
+fi
+
+
 case "$BCMD" in
 
 ###############################################################################
@@ -134,11 +154,11 @@ case "$BCMD" in
 ###############################################################################
 menu)
 	if [ "$OS_RASPBIAN" = true ]; then 
-		zenity --info --text="Raspberry Pi was detected. Performing specific instructions for raspberry pi. THIS IS YET UNTESTED AND EXPERIMENTAL."
+		zenity --info  --width=400  --text="Raspberry Pi was detected. Performing specific instructions for raspberry pi."
 	fi
 
 	if [ "$OS_XENIAL" = false ]; then 
-		zenity --info --text="Ubuntu 16.04 (Xenial) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 installation."
+		zenity --info  --width=400 --text="Ubuntu 16.04 (Xenial) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 installation."
 	fi
 
 	ACTION=$(zenity \
@@ -182,7 +202,7 @@ menu)
 menu-install)
 	progressbarinfo "Launching installation menu for ACE/SmartSoft"
 
-	zenity --question --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
+	zenity --question --width=500 --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
 
 	ACTION=$(zenity \
 		--title "Install ACE/SmartSoft and dependencies on a clean system" \
@@ -314,7 +334,7 @@ package-internal-install)
 ###############################################################################
 
 package-install-robotino)
-	zenity --info --text="You selected to install packages for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
+	zenity --info --width=400 --text="You selected to install packages for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
 	abort
 	# become root
 #	if [ "$(id -u)" != "0" ]; then
@@ -357,7 +377,7 @@ repo-co-smartsoft)
 	# check if we are in the lab and then ask wether to continue to install external stuff
 	# or quit and continue with internal stuff
 	if [ $LOCATION_SRRC = true ]; then
-		if zenity --question --text="It appears that you are installing from within the SRRC laboratory.\n\nDo you want to use the internal repositories instead of the public repositories?\n"; then
+		if zenity --question --width=400 --text="It appears that you are installing from within the SRRC laboratory.\n\nDo you want to use the internal repositories instead of the public repositories?\n"; then
 			bash $SCRIPT_NAME repo-co-smartsoft-internal
 			exit 0
 		fi
@@ -395,7 +415,7 @@ repo-co-smartsoft)
 	git clone https://github.com/Servicerobotics-Ulm/SystemRepository.git || askabort
 
 
-	zenity --info --text="Environment settings in .profile have been changed. In order to use them, \ndo one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
+	zenity --info --width=400 --text="Environment settings in .profile have been changed. In order to use them, \ndo one of the following after the installation script finished:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
 
 	exit 0
 ;;
@@ -421,7 +441,7 @@ repo-co-smartsoft-internal)
 	cd ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 
 	if ! [ -d "/mnt/ssh/robo/repositories/smartSoftDev_v3/" ]; then
-		zenity --info --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing.\n(you can keep this window open / the script active while doing so...)"
+		zenity --info --width=400 --text="Error: /mnt/ssh/robo/repositories/smartSoftDev_v3/ is not accessible.\nPlease mount it before continuing.\n(you can keep this window open / the script active while doing so...)"
 	fi
 
 	progressbarinfo "Cloning repositories SmartSoftComponentDeveloperAPIcpp.git.git"
@@ -445,7 +465,7 @@ repo-co-smartsoft-internal)
 	progressbarinfo "Cloning repositories SystemRepository.git"
 	git clone /mnt/ssh/robo/repositories/smartSoftDev_v3/SystemRepository.git || askabort
 
-	zenity --info --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"  --height=100
+	zenity --info --width=400 --text="Environment settings in .profile have been changed. In order to use them, do one of the following:\n\n- Restart your computer\n- Logout/Login again\n- Execute 'source ~/.profile'"
 
 	exit 0
 
@@ -457,7 +477,7 @@ repo-up-smartsoft)
 	progressbarinfo "About to update repositories ..."
 	sleep 2
 
-	if zenity --question --text="The installation script is about to update the repositories.\nThis will <b>overwrite all your modifications</b> that you did to the repositories in \$SMART_ROOT_ACE/repos/.\n\nDo you want to proceed?\n\nIt is safe to do so in case you did not modify SmartMDSD Toolchain projects or don't need the modifications anymore.\nIf you choose not to update, please do a 'git pull' for the repositories yourself."; then
+	if zenity --question --width=400 --text="The installation script is about to update the repositories.\nThis will <b>overwrite all your modifications</b> that you did to the repositories in \$SMART_ROOT_ACE/repos/.\n\nDo you want to proceed?\n\nIt is safe to do so in case you did not modify SmartMDSD Toolchain projects or don't need the modifications anymore.\nIf you choose not to update, please do a 'git pull' for the repositories yourself."; then
 		echo -e "\n\n\n# Continuing with repo update.\n\n\n"
 	else
 		echo -e "\n\n\n# Not running repo update.\n\n\n"
@@ -548,7 +568,7 @@ build-smartsoft)
 
 ###############################################################################
 svn-co-robotino)
-	zenity --info --text="You selected to svn-co for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
+	zenity --info --width=400 --text="You selected to svn-co for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
 	abort
 #	echo -e "\n\n\n### Running Robotino ACE/SmartSoft SVN checkout ...\n\n\n"
 #	sleep 2
@@ -561,7 +581,7 @@ svn-co-robotino)
 
 ###############################################################################
 svn-up-robotino)
-	zenity --info --text="You selected to svn-up for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
+	zenity --info --width=400 --text="You selected to svn-up for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
 #	echo -e "\n\n\n### Running Robotino SVN update ...\n\n\n"
 #	sleep 2
 #
@@ -572,7 +592,7 @@ svn-up-robotino)
 
 ###############################################################################
 build-robotino)
-	zenity --info --text="You selected to build-robotino for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
+	zenity --info --width=400 --text="You selected to build-robotino for robotino.\nPlease note that robotino is not yet supported by v3-generation of SmartSoft/SmartMDSD Toolchain."
 #	echo -e "\n\n\n### Running Build robotino ...\n\n\n"
 #	sleep 2
 #
@@ -641,10 +661,10 @@ vm-update)
 
 	if [ "$(hostname)" != "smartsoft-vm" ]; then
 		echo "Virtual machine was not detected."
-		zenity --question --text="<b>Warning</b>: Virtual machine was not detected.\nOnly run this action from within the virtual machine.\n\nDo you want to proceed at your own risk?" || abort
+		zenity --question --width=400 --text="<b>Warning</b>: Virtual machine was not detected.\nOnly run this action from within the virtual machine.\n\nDo you want to proceed at your own risk?" || abort
 	fi
 
-	if zenity --question --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
+	if zenity --question --width=400 --text="This installation/update script has an updater included.\nDo you want to update this script before installing it?\n\nWill update script from:\n$SCRIPT_UPDATE_URL\n"; then
 		bash $SCRIPT_NAME script-update
 		exit 0
 	else
@@ -729,7 +749,7 @@ script-update)
 
 	mv $T $SCRIPT_NAME
 
-	zenity --info --text="Update finished. Please restart the\ninstallation script (and choose not to update)."
+	zenity --info --width=400 --text="Update finished. Please restart the\ninstallation script (and choose not to update)."
 
 	exit 0
 ;;
