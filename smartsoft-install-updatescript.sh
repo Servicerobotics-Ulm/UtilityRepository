@@ -67,6 +67,8 @@
 # Dennis Stampfer 5.11.2018
 # Fixing an issue with "source .profile" with custom prompts
 #
+# Dennis Stampfer 20.12.2018
+# Temporarily deactivating toolchain installer since we are changing installation procedure
 #
 #
 #
@@ -612,46 +614,48 @@ toolchain-update)
 	progressbarinfo "Running toolchain installation ..."
 	sleep 2
 
-	TC_DOWNLOAD=`tempfile`
-	progressbarinfo "Downloading SmartMDSD Toolchain ..."
-	wget --progress=dot:mega --content-disposition $TOOLCHAIN_LATEST_URL -O $TC_DOWNLOAD || askabort
+	zenity --info --width=700 --text="Please Note:\n\nThe installation/update of the SmartMDSD Toolchain has been temporarily deactivated, since we are changing the method of installation. Please refer to the website for installation instructions of the SmartMDSD Toolchain:\n\nhttps://wiki.servicerobotik-ulm.de/smartmdsd-toolchain:installation"
 
-	progressbarinfo "Setting up SmartMDSD Toolchain ..."
-
-	mv ~/SOFTWARE/SmartMDSD_Toolchain.latest ~/SOFTWARE/SmartMDSD_Toolchain.`date +%Y-%m-%d` 
-	mkdir -p ~/SOFTWARE/SmartMDSD_Toolchain.latest 
-	cd ~/SOFTWARE/SmartMDSD_Toolchain.latest || askabort
-
-	#TCNAME=$(ls * | sed "s/\.tar.*//g" | sed "s/\.bz2.*//g")
-	tar xf $TC_DOWNLOAD || askabort
-	EXECUTABLE=`pwd`/$(find ./ -name eclipse -type f)
-	ICON=`pwd`/$(find ./ -name icon.xpm -type f)
-
-
-	echo "Toolchain executable is: $EXECUTABLE"
-	
-	echo -e "\n# Setting up workspace path ...\n"
-	IDEPREFS=$(find ./ -name org.eclipse.ui.ide.prefs)
-	echo "MAX_RECENT_WORKSPACES=5
-RECENT_WORKSPACES=$HOME/workspaces/SmartMDSD-Toolchain
-RECENT_WORKSPACES_PROTOCOL=3
-SHOW_WORKSPACE_SELECTION_DIALOG=true
-eclipse.preferences.version=1
-" > $IDEPREFS
-
-	progressbarinfo "Creating desktop starter ..."
-echo "[Desktop Entry]
-Encoding=UTF-8
-Version=1.0
-Name=SmartMDSD Toolchain
-Comment=Starts the latest version of the SmartMDSD Toolchain
-Type=Application
-Exec=$EXECUTABLE
-Icon=$ICON
-" > ~/Desktop/SmartMDSDToolchain.desktop
-	chmod +x ~/Desktop/SmartMDSDToolchain.desktop
-	exit 0
-;;
+#	TC_DOWNLOAD=`tempfile`
+#	progressbarinfo "Downloading SmartMDSD Toolchain ..."
+#	wget --progress=dot:mega --content-disposition $TOOLCHAIN_LATEST_URL -O $TC_DOWNLOAD || askabort
+#
+#	progressbarinfo "Setting up SmartMDSD Toolchain ..."
+#
+#	mv ~/SOFTWARE/SmartMDSD_Toolchain.latest ~/SOFTWARE/SmartMDSD_Toolchain.`date +%Y-%m-%d` 
+#	mkdir -p ~/SOFTWARE/SmartMDSD_Toolchain.latest 
+#	cd ~/SOFTWARE/SmartMDSD_Toolchain.latest || askabort
+#
+#	#TCNAME=$(ls * | sed "s/\.tar.*//g" | sed "s/\.bz2.*//g")
+#	tar xf $TC_DOWNLOAD || askabort
+#	EXECUTABLE=`pwd`/$(find ./ -name eclipse -type f)
+#	ICON=`pwd`/$(find ./ -name icon.xpm -type f)
+#
+#
+#	echo "Toolchain executable is: $EXECUTABLE"
+#	
+#	echo -e "\n# Setting up workspace path ...\n"
+#	IDEPREFS=$(find ./ -name org.eclipse.ui.ide.prefs)
+#	echo "MAX_RECENT_WORKSPACES=5
+#RECENT_WORKSPACES=$HOME/workspaces/SmartMDSD-Toolchain
+#RECENT_WORKSPACES_PROTOCOL=3
+#SHOW_WORKSPACE_SELECTION_DIALOG=true
+#eclipse.preferences.version=1
+#" > $IDEPREFS
+#
+#	progressbarinfo "Creating desktop starter ..."
+#echo "[Desktop Entry]
+#Encoding=UTF-8
+#Version=1.0
+#Name=SmartMDSD Toolchain
+#Comment=Starts the latest version of the SmartMDSD Toolchain
+#Type=Application
+#Exec=$EXECUTABLE
+#Icon=$ICON
+#" > ~/Desktop/SmartMDSDToolchain.desktop
+#	chmod +x ~/Desktop/SmartMDSDToolchain.desktop
+#	exit 0
+#;;
 
 
 ###############################################################################
