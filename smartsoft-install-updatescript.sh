@@ -655,7 +655,7 @@ toolchain-update)
 #" > ~/Desktop/SmartMDSDToolchain.desktop
 #	chmod +x ~/Desktop/SmartMDSDToolchain.desktop
 #	exit 0
-#;;
+;;
 
 
 ###############################################################################
