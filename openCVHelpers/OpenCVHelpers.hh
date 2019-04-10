@@ -48,6 +48,11 @@
 #include <cv.h>
 #include <iostream>
 
+#ifndef cvGetHistValue_1D
+#define cvGetHistValue_1D( hist, idx0 ) \
+  ((float*)(cvPtr1D( (hist)->bins, (idx0), 0 )))
+#endif
+
 class OpenCVHelpers {
 public:
 
@@ -100,7 +105,7 @@ static IplImage* copyRGBToIplImage( unsigned char* arr_image, const int height, 
         // histogram variables
         CvHistogram *hist;
         int hist_size = histBins;
-        float range_0[] = { min_val, max_val };
+        float range_0[] = { (float)min_val, (float)max_val };
         float* ranges[] = { range_0 };
 
         int index;
@@ -118,13 +123,15 @@ static IplImage* copyRGBToIplImage( unsigned char* arr_image, const int height, 
 
         // remove lower n-percent quantil
         for (index = 0; index < hist_size; index++) {
-	        hist_value = cvQueryHistValue_1D(hist, index);
+	        //hist_value = cvQueryHistValue_1D(hist, index);
+	          hist_value = cvGetReal1D(hist, index);
 	        sum += hist_value;
 	        if (sum >= maxSumHistValues * quantile) {
 		        lowerIndex = index;
 		        break;
 	        }
 	        float* histEntry = cvGetHistValue_1D(hist, index);
+//	        float* histEntry = (float)cvGetReal1D(hist, index);
 	        *histEntry = 0.0; // set histogram entry to 0.0
         }
 
@@ -132,13 +139,16 @@ static IplImage* copyRGBToIplImage( unsigned char* arr_image, const int height, 
         int upperIndex = hist_size - 1; // initialize with highest index
         sum = 0;
         for (index = hist_size - 1; index >= 0; index--) {
-	        hist_value = cvQueryHistValue_1D(hist, index);
+//	        hist_value = cvQueryHistValue_1D(hist, index);
+	          hist_value = (float)cvGetReal1D(hist, index);
+
 	        sum += hist_value;
 	        if (sum >= maxSumHistValues * quantile) {
 		        upperIndex = index;
 		        break;
 	        }
 	        float* histEntry = cvGetHistValue_1D(hist, index);
+		//float* histEntry = (float)cvGetReal1D(hist, index);
 	        *histEntry = 0.0; // set histogram entry to 0.0
         }
 
@@ -151,8 +161,10 @@ static IplImage* copyRGBToIplImage( unsigned char* arr_image, const int height, 
         // calculate the cumulative probability density function of the	histogram hist
         float cumulativeSum = 0.0;
         for (index = 0; index < hist_size; index++) {
-	        hist_value = cvQueryHistValue_1D(hist, index);
+//	        hist_value = cvQueryHistValue_1D(hist, index);
+	        hist_value = cvGetReal1D(hist, index);
 	        float* histEntry = cvGetHistValue_1D(cumulativeHist, index);
+		//float* histEntry = (float)cvGetReal1D(cumulativeHist, index);
 	        cumulativeSum += hist_value; // cumulative sum of all histogram	entries
             *histEntry += cumulativeSum; // store cumulative sum in the histogram cumulativeHist
         }
@@ -168,7 +180,8 @@ static IplImage* copyRGBToIplImage( unsigned char* arr_image, const int height, 
 		        pixelValue = srcPtr[x];
 		        // ((src pixel value - min value in src image) / (max_value in src image - min value in src image)) * number of histogram bins)
 		        cdfIndex = cvRound(((pixelValue - min_val) / (max_val - min_val)) * (histBins - 1));
-		        hist_value = cvQueryHistValue_1D(cumulativeHist, cdfIndex);
+		        //hist_value = cvQueryHistValue_1D(cumulativeHist, cdfIndex);
+         		hist_value   = (float)cvGetReal1D(cumulativeHist, cdfIndex);
 		        h = cvRound(hist_value * (256 - 1));
 		        dstPtr[x] = (uchar) h;
 	        }
