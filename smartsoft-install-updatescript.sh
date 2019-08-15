@@ -395,7 +395,8 @@ repo-co-smartsoft)
 	echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
 	echo "export SMART_ROOT_ACE=\$HOME/SOFTWARE/smartsoft" >> ~/.profile
 	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/repos" >> ~/.profile
-	echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
+	#echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
+	echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.bashrc
 
 	source ~/.profile 
 
