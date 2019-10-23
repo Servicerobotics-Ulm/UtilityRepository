@@ -70,6 +70,8 @@
 # Dennis Stampfer 20.12.2018
 # Temporarily deactivating toolchain installer since we are changing installation procedure
 #
+# Alex Lotz 23.10.2019
+# Add check_sudo function and add latest toolchain installation commands
 #
 #
 # DO NOT ADD CODE ABOVE THIS LINE
@@ -88,7 +90,12 @@ source ~/.profile
 SCRIPT_DIR=`pwd`
 SCRIPT_NAME=$0
 SCRIPT_UPDATE_URL="https://github.com/Servicerobotics-Ulm/UtilityRepository/raw/master/smartsoft-install-updatescript.sh"
-TOOLCHAIN_LATEST_URL="https://web2.servicerobotik-ulm.de/files/SmartMDSD_Toolchain/latest.tar.gz"
+
+TOOLCHAIN_NAME="SmartMDSD-Toolchain"
+TOOLCHAIN_VERSION="3.10"
+TOOLCHAIN_URL="https://github.com/Servicerobotics-Ulm/SmartMDSD-Toolchain/releases/download/v$TOOLCHAIN_VERSION/SmartMDSD-Toolchain-v$TOOLCHAIN_VERSION.tar.gz"
+TOOLCHAIN_LAUNCHER="$TOOLCHAIN_NAME.desktop"
+
 COMMIT='$Id$'
 
 echo "Update Script git=$COMMIT"
@@ -111,6 +118,27 @@ function progressbarinfo() {
 	echo -e "\n\n"
 	echo "# $1"
 	echo -e "\n\n"
+}
+
+# check if sudo is allowed and if necessary ask for password
+function check_sudo() {
+  local prompt
+
+  # check for sudo rights without prompt
+  prompt=$(sudo -nv 2>&1)
+  if [ $? -eq 0 ]; then
+    echo "has_sudo"
+  elif echo $prompt | grep -q '^sudo:'; then
+    PASSWD=$(zenity --title "sudo password" --password) || exit 1
+    echo -e "$PASSWD\n" | sudo -Sv
+    if [ $? -eq 0 ]; then
+      echo "has_sudo"
+    else
+      abort
+    fi
+  else
+    abort
+  fi
 }
 
 if `grep --ignore-case precise /etc/os-release > /dev/null`; then 
@@ -613,9 +641,55 @@ build-robotino)
 ###############################################################################
 toolchain-update)
 	progressbarinfo "Running toolchain installation ..."
-	sleep 2
+	# check if OpenJDK 8 is installed (autoinstall it if needed)
+	if [[ $(java -version 2>&1) == "openjdk version \"1.8"* ]]; then
+		echo "-- found OpenJDK 1.8"
+	else
+		progressbarinfo "Installing dependency OpenJDK 8 ..."
+		check_sudo
+		sudo apt install -y openjdk-8-jre || askabort
+	fi
 
-	zenity --info --width=700 --text="Please Note:\n\nThe installation/update of the SmartMDSD Toolchain has been temporarily deactivated, since we are changing the method of installation. Please refer to the website for installation instructions of the SmartMDSD Toolchain:\n\nhttps://wiki.servicerobotik-ulm.de/smartmdsd-toolchain:installation"
+	progressbarinfo "Downloading the SmartMDSD Toolchain archive from: $TOOLCHAIN_URL"
+	cd $HOME/SOFTWARE
+	wget -N $TOOLCHAIN_URL || askabort
+	wget --progress=dot:mega --content-disposition $TOOLCHAIN_URL || askabort
+
+	progressbarinfo "Extracting the SmartMDSD Toolchain archive $TOOLCHAIN_NAME-v$TOOLCHAIN_VERSION.tar.gz" 
+	tar -xzf $TOOLCHAIN_NAME-v$TOOLCHAIN_VERSION.tar.gz || askabort
+
+	# create a desktop launcher
+	echo "#!/usr/bin/xdg-open" > /tmp/$TOOLCHAIN_LAUNCHER
+	echo "[Desktop Entry]" >> /tmp/$TOOLCHAIN_LAUNCHER
+	echo "Name=SmartMDSD Toolchain v$TOOLCHAIN_VERSION" >> /tmp/$TOOLCHAIN_LAUNCHER	
+	echo "Version=$TOOLCHAIN_VERSION" >> /tmp/$TOOLCHAIN_LAUNCHER
+	
+	cd $TOOLCHAIN_NAME-v$TOOLCHAIN_VERSION
+	echo "Exec=$PWD/eclipse" >> /tmp/$TOOLCHAIN_LAUNCHER
+
+	cd plugins/org.smartmdsd.branding*
+	cd icons
+	echo "Icon=$PWD/logo64.png" >> /tmp/$TOOLCHAIN_LAUNCHER
+
+	echo "Terminal=false" >> /tmp/$TOOLCHAIN_LAUNCHER
+	echo "Type=Application" >> /tmp/$TOOLCHAIN_LAUNCHER
+	echo "Categories=Development;" >> /tmp/$TOOLCHAIN_LAUNCHER
+
+	cd /tmp
+	chmod +x $TOOLCHAIN_LAUNCHER
+	cp $TOOLCHAIN_LAUNCHER $HOME/.local/share/applications/
+	cp $TOOLCHAIN_LAUNCHER $HOME/Desktop/
+	if ! [ -x "$(command -v gio)" ]; then
+		progressbarinfo "Installing dependency libglib2.0-bin (to use the GIO tool) ..."
+		check_sudo
+		sudo apt-get install -y libglib2.0-bin
+	fi
+	if [ -x "$(command -v gio)" ]; then
+		gio set $HOME/Desktop/$TOOLCHAIN_LAUNCHER "metadata::trusted" yes
+	fi
+
+	exit 0
+	
 
 #	TC_DOWNLOAD=`tempfile`
 #	progressbarinfo "Downloading SmartMDSD Toolchain ..."
