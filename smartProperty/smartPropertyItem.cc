@@ -61,7 +61,7 @@ void PropertyItem::print(std::ostream &os, const std::string &indent) const
   os << indent << "PropertyItem { " << _value << " }" << std::endl;
 }
 
-int PropertyItem::getInteger() const throw(ConversionFailed)
+int PropertyItem::getInteger() const 
 {
   const char *start = _value.c_str();
   char *end = 0;
@@ -73,7 +73,7 @@ int PropertyItem::getInteger() const throw(ConversionFailed)
   return i;
 }
 
-double PropertyItem::getDouble() const throw(ConversionFailed)
+double PropertyItem::getDouble() const 
 {
   const char *start = _value.c_str();
   char *end = 0;
@@ -85,7 +85,7 @@ double PropertyItem::getDouble() const throw(ConversionFailed)
   return d;
 }
 
-bool PropertyItem::getBool() const throw(ConversionFailed)
+bool PropertyItem::getBool() const 
 {
   std::istringstream iss(_value);
   std::ostringstream oss;

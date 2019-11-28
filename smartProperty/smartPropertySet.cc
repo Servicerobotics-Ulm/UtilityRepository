@@ -92,7 +92,7 @@ unsigned int PropertySet::num_items() const
   return n;
 }
 
-void PropertySet::remove(const Key &key) throw()
+void PropertySet::remove(const Key &key)
 {
   const Key *subkey = key.getSubkey();
   if(subkey)
@@ -119,7 +119,7 @@ void PropertySet::remove(const Key &key) throw()
   }
 }
 
-Property &PropertySet::get(const Key &key) throw(Exception)
+Property &PropertySet::get(const Key &key)
 {
   std::map<std::string,Property*>::iterator child_iter;
   child_iter = _children.find(key.getKey());
@@ -159,7 +159,7 @@ Property &PropertySet::get(const Key &key) throw(Exception)
   return *dummy;
 }
 
-const Property &PropertySet::get(const Key &key) const throw(Exception)
+const Property &PropertySet::get(const Key &key) const
 {
   std::map<std::string,Property*>::const_iterator child_iter;
   child_iter = _children.find(key.getKey());
@@ -199,40 +199,40 @@ const Property &PropertySet::get(const Key &key) const throw(Exception)
   return *dummy;
 }
 
-PropertyItem &PropertySet::getItem(const Key &key) throw (Exception)
+PropertyItem &PropertySet::getItem(const Key &key) 
 {
   PropertyItem *pi = dynamic_cast<PropertyItem*>(&get(key));
   if(pi==0)  throw WrongType(key);
   return *pi;
 }
 
-const PropertyItem &PropertySet::getItem(const Key &key) const throw (Exception)
+const PropertyItem &PropertySet::getItem(const Key &key) const
 {
   const PropertyItem *pi = dynamic_cast<const PropertyItem*>(&get(key));
   if(pi==0)  throw WrongType(key);
   return *pi;
 }
 
-PropertySet &PropertySet::getSet(const Key &key) throw (Exception)
+PropertySet &PropertySet::getSet(const Key &key) 
 {
   PropertySet *ps = dynamic_cast<PropertySet*>(&get(key));
   if(ps==0)  throw WrongType(key);
   return *ps;
 }
 
-const PropertySet &PropertySet::getSet(const Key &key) const throw (Exception)
+const PropertySet &PropertySet::getSet(const Key &key) const 
 {
   const PropertySet *ps = dynamic_cast<const PropertySet*>(&get(key));
   if(ps==0)  throw WrongType(key);
   return *ps;
 }
 
-std::string PropertySet::getString(const Key &key) const throw(Exception)
+std::string PropertySet::getString(const Key &key) const 
 {
   return this->getItem(key).getString();
 }
 
-bool PropertySet::tryGetString(const Key &key, std::string &s) const throw()
+bool PropertySet::tryGetString(const Key &key, std::string &s) const 
 {
   try {
     s = this->getItem(key).getString();
@@ -241,22 +241,22 @@ bool PropertySet::tryGetString(const Key &key, std::string &s) const throw()
   return false;
 }
 
-int PropertySet::getInteger(const Key &key) const throw(Exception)
+int PropertySet::getInteger(const Key &key) const 
 {
   return this->getItem(key).getInteger();
 }
 
-double PropertySet::getDouble(const Key &key) const throw(Exception)
+double PropertySet::getDouble(const Key &key) const 
 {
   return this->getItem(key).getDouble();
 }
 
-bool PropertySet::getBool(const Key &key) const throw(Exception)
+bool PropertySet::getBool(const Key &key) const
 {
   return this->getItem(key).getBool();
 }
 
-bool PropertySet::tryGetBool(const Key &key, bool &b) const throw()
+bool PropertySet::tryGetBool(const Key &key, bool &b) const
 {
   try {
     b = this->getItem(key).getBool();
@@ -298,7 +298,7 @@ void PropertySet::print(std::ostream &os, const std::string &indent) const
   os << indent << "}" << std::endl;
 }
 
-void PropertySet::_set_impl(const Key &key, Property *prop) throw(Exception)
+void PropertySet::_set_impl(const Key &key, Property *prop)
 {
   const Key *subkey = key.getSubkey();
   if(subkey)

@@ -76,12 +76,12 @@ public:
    *  @param value property value to set.
    */
   template<class Value>
-  inline void set(const Key &key, const Value &value) throw(Exception);
+  inline void set(const Key &key, const Value &value);
 
   /**
     Remove a property from this set.
    */
-  void remove(const Key &key) throw();
+  void remove(const Key &key);
 
   /**
     Remove all properties from this set.
@@ -97,7 +97,7 @@ public:
    *  @throw WrongType if a PropertySet was expected during tree
    *                   traversal but a PropertyItem was found.
    */
-  Property &get(const Key &key) throw(Exception);
+  Property &get(const Key &key);
 
   /** Return a const subProperty.
    *
@@ -108,7 +108,7 @@ public:
    *  @throw WrongType if a PropertySet was expected during tree
    *                   traversal but a PropertyItem was found.
    */
-  const Property &get(const Key &key) const throw(Exception);
+  const Property &get(const Key &key) const;
 
   /** get a PropertyItem.
    *
@@ -121,7 +121,7 @@ public:
    *                   It is also thrown if \e key pointed to a
    *                   PropertySet.
    */
-  PropertyItem &getItem(const Key &key) throw (Exception);
+  PropertyItem &getItem(const Key &key);
 
   /** get a const PropertyItem.
    *
@@ -134,7 +134,7 @@ public:
    *                   It is also thrown if \e key pointed to a
    *                   PropertySet.
    */
-  const PropertyItem &getItem(const Key &key) const throw (Exception);
+  const PropertyItem &getItem(const Key &key) const;
 
   /** get a PropertySet.
    *
@@ -147,7 +147,7 @@ public:
    *                   It is also thrown if \e key pointed to a
    *                   PropertyItem.
    */
-  PropertySet &getSet(const Key &key) throw (Exception);
+  PropertySet &getSet(const Key &key);
 
   /** get a const PropertySet.
    *
@@ -160,16 +160,16 @@ public:
    *                   It is also thrown if \e key pointed to a
    *                   PropertyItem.
    */
-  const PropertySet &getSet(const Key &key) const throw (Exception);
+  const PropertySet &getSet(const Key &key) const;
 
-  std::string getString(const Key &key) const throw(Exception);
+  std::string getString(const Key &key) const;
 
-  bool tryGetString(const Key &key, std::string &s) const throw();
+  bool tryGetString(const Key &key, std::string &s) const;
 
-  int getInteger(const Key &key) const throw(Exception);
+  int getInteger(const Key &key) const;
 
   template<class Integer>
-  inline bool tryGetInteger(const Key &key, Integer &i) const throw()
+  inline bool tryGetInteger(const Key &key, Integer &i) const
   {
     try {
       i = this->getItem(key).getInteger();
@@ -178,10 +178,10 @@ public:
     return false;
   }
 
-  double getDouble(const Key &key) const throw(Exception);
+  double getDouble(const Key &key) const;
 
   template<class Double>
-  inline bool tryGetDouble(const Key &key, Double &d) const throw()
+  inline bool tryGetDouble(const Key &key, Double &d) const
   {
     try {
       d = this->getItem(key).getDouble();
@@ -190,15 +190,15 @@ public:
     return false;
   }
 
-  bool getBool(const Key &key) const throw(Exception);
+  bool getBool(const Key &key) const;
 
-  bool tryGetBool(const Key &key, bool &b) const throw();
+  bool tryGetBool(const Key &key, bool &b) const;
 
   virtual void save_xml(std::ostream &os = std::cout, const std::string &indent = "") const;
   virtual void print(std::ostream &os = std::cout, const std::string &indent = "") const;
 
 protected:
-  void _set_impl(const Key &key, Property *prop) throw(Exception);
+  void _set_impl(const Key &key, Property *prop);
   void _clear();
   void _copy(const PropertySet &source);
 
@@ -231,43 +231,43 @@ private:
  *                   traversal but a PropertyItem was found.
  */
 template<>
-inline void PropertySet::set(const Key &key, const Property &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, const Property &prop)
 {
   this->_set_impl(key, prop.clone());
 }
 
 template<>
-inline void PropertySet::set(const Key &key, const PropertySet &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, const PropertySet &prop)
 {
   this->_set_impl(key, prop.clone());
 }
 
 template<>
-inline void PropertySet::set(const Key &key, const PropertyItem &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, const PropertyItem &prop)
 {
   this->_set_impl(key, prop.clone());
 }
 
 template<>
-inline void PropertySet::set(const Key &key, Property* const &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, Property* const &prop)
 {
   this->_set_impl(key, prop);
 }
 
 template<>
-inline void PropertySet::set(const Key &key, PropertySet* const &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, PropertySet* const &prop)
 {
   this->_set_impl(key, prop);
 }
 
 template<>
-inline void PropertySet::set(const Key &key, PropertyItem* const &prop) throw(Exception)
+inline void PropertySet::set(const Key &key, PropertyItem* const &prop)
 {
   this->_set_impl(key, prop);
 }
 
 template<class Value>
-inline void PropertySet::set(const Key &key, const Value &value) throw(Exception)
+inline void PropertySet::set(const Key &key, const Value &value)
 {
   this->_set_impl(key, new PropertyItem(value));
 }

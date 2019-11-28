@@ -84,12 +84,12 @@ public:
   // they can throw the InvalidOperation or ConversionFailed exception
 
   /** return value as a string */
-  inline const std::string &getString() const throw()
+  inline const std::string &getString() const 
   {
     return _value;
   }
 
-  inline bool getString(std::string &s) const throw()
+  inline bool getString(std::string &s) const 
   {
     s = _value;
     return true;
@@ -100,10 +100,10 @@ public:
    *  their common encodings (e.g. "25", "031", and "0x19" are equal).
    *  @throw ConversionFailed if value can't be converted to an integer
    */
-  int getInteger() const throw(ConversionFailed);
+  int getInteger() const;
 
   template<class Integer>
-  inline bool getInteger(Integer &i) const throw()
+  inline bool getInteger(Integer &i) const 
   {
     try {
       i = this->getInteger();
@@ -115,10 +115,10 @@ public:
   /** return value as a double.
    *  @throw ConversionFailed if value can't be converted to double
    */
-  double getDouble() const throw(ConversionFailed);
+  double getDouble() const;
 
   template<class Double>
-  inline bool getDouble(Double &d) const throw()
+  inline bool getDouble(Double &d) const 
   {
     try {
       d = this->getDouble();
@@ -135,9 +135,9 @@ public:
    *
    *  @throw ConversionFailed if value can't be converted to a bool
    */
-  bool getBool() const throw(ConversionFailed);
+  bool getBool() const;
 
-  inline bool getBool(bool &b) const throw()
+  inline bool getBool(bool &b) const 
   {
     try {
       b = this->getBool();
