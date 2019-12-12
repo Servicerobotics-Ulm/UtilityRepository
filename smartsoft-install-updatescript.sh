@@ -73,6 +73,8 @@
 # Alex Lotz 23.10.2019
 # Add check_sudo function and add latest toolchain installation commands
 #
+# Alex Lotz 12.12.2019
+# Update Toolchain Installation to use version 3.12
 #
 # DO NOT ADD CODE ABOVE THIS LINE
 # The following if is to test the update script.
@@ -92,7 +94,7 @@ SCRIPT_NAME=$0
 SCRIPT_UPDATE_URL="https://github.com/Servicerobotics-Ulm/UtilityRepository/raw/master/smartsoft-install-updatescript.sh"
 
 TOOLCHAIN_NAME="SmartMDSD-Toolchain"
-TOOLCHAIN_VERSION="3.10"
+TOOLCHAIN_VERSION="3.12"
 TOOLCHAIN_URL="https://github.com/Servicerobotics-Ulm/SmartMDSD-Toolchain/releases/download/v$TOOLCHAIN_VERSION/SmartMDSD-Toolchain-v$TOOLCHAIN_VERSION.tar.gz"
 TOOLCHAIN_LAUNCHER="$TOOLCHAIN_NAME.desktop"
 
@@ -678,15 +680,16 @@ toolchain-update)
 	cd /tmp
 	chmod +x $TOOLCHAIN_LAUNCHER
 	cp $TOOLCHAIN_LAUNCHER $HOME/.local/share/applications/
-	cp $TOOLCHAIN_LAUNCHER $HOME/Desktop/
-	if ! [ -x "$(command -v gio)" ]; then
-		progressbarinfo "Installing dependency libglib2.0-bin (to use the GIO tool) ..."
-		check_sudo
-		sudo apt-get install -y libglib2.0-bin
-	fi
-	if [ -x "$(command -v gio)" ]; then
-		gio set $HOME/Desktop/$TOOLCHAIN_LAUNCHER "metadata::trusted" yes
-	fi
+	cp $TOOLCHAIN_LAUNCHER $(xdg-user-dir DESKTOP)
+
+#	if ! [ -x "$(command -v gio)" ]; then
+#		progressbarinfo "Installing dependency libglib2.0-bin (to use the GIO tool) ..."
+#		check_sudo
+#		sudo apt-get install -y libglib2.0-bin
+#	fi
+#	if [ -x "$(command -v gio)" ]; then
+#		gio set $HOME/Desktop/$TOOLCHAIN_LAUNCHER "metadata::trusted" yes
+#	fi
 
 	exit 0
 	
