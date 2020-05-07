@@ -357,7 +357,7 @@ package-install)
 		sudo apt-get update
 		sudo apt-get install libmrpt-dev mrpt-apps
 
-                apt-get -y --force-yes install openjdk-11-jre libtbb-dev || askabort
+                apt-get -y --force-yes install openjdk-8-jre libtbb-dev || askabort
         fi
 
 
