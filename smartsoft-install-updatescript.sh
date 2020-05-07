@@ -76,6 +76,9 @@
 # Alex Lotz 12.12.2019
 # Update Toolchain Installation to use version 3.12
 #
+# Matthias Lutz 07.05.2020
+# Add ubuntu 20.04 support
+
 # DO NOT ADD CODE ABOVE THIS LINE
 # The following if is to test the update script.
 if [ "$1" == "script-update-test" ]; then
@@ -155,6 +158,9 @@ if `grep --ignore-case xenial /etc/os-release > /dev/null`; then
 	OS_XENIAL=true
 fi
 
+if `grep --ignore-case focal /etc/os-release > /dev/null`; then 
+	OS_FOCAL=true
+fi
 if `ping -c 1 i-zafh-03.srrc.informatik.hs-ulm.de &> /dev/null`; then 
 	LOCATION_SRRC=true
 fi
@@ -189,8 +195,8 @@ menu)
 		zenity --info  --width=400  --text="Raspberry Pi was detected. Performing specific instructions for raspberry pi."
 	fi
 
-	if [ "$OS_XENIAL" = false ]; then 
-		zenity --info  --width=400 --text="Ubuntu 16.04 (Xenial) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 installation."
+	if [ "$OS_XENIAL" = false -a "$OS_FOCAL" = false ]; then 
+		zenity --info  --width=400 --text="Ubuntu 16.04 (Xenial) or 20.04 (Focal) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 and 20.04 installation."
 	fi
 
 	ACTION=$(zenity \
@@ -234,7 +240,7 @@ menu)
 menu-install)
 	progressbarinfo "Launching installation menu for ACE/SmartSoft"
 
-	zenity --question --width=500 --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
+	zenity --question --width=500 --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04 or 20.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
 
 	ACTION=$(zenity \
 		--title "Install ACE/SmartSoft and dependencies on a clean system" \
@@ -246,7 +252,7 @@ menu-install)
 		--hide-column=2 --print-column=2 --hide-header \
 		--separator="|" \
 		true package-install "1.1) Install system packages required for ACE/SmartSoft" \
-		true ace-source-install "1.2) Install ACE from source" \
+		true ace-source-install "1.2) Install ACE from source or package" \
 		true repo-co-smartsoft "1.3) Checkout ACE/SmartSoft repository and set environment variables" \
         	false package-internal-install "1.4) Install additional generic packages (optional)" \
 #		false package-install-robotino "X) Install packages for robotino robot" \
@@ -278,6 +284,12 @@ ace-source-install)
 		exit 0
 	fi
 
+ 	# FOCAL (20.04 Packages)
+        if [ "$OS_FOCAL" = true ]; then
+		progressbarinfo "Installing ACE from packages..."
+                apt-get -y --force-yes install libace-dev || askabort
+		exit 0
+        fi
 
 	progressbarinfo "Running ACE source install (will take some time)"
 
@@ -311,27 +323,43 @@ package-install)
 	progressbarinfo "Installing packages ..."
 	# General packages:
 	apt-get -y --force-yes install ssh-askpass git flex bison htop tree cmake cmake-curses-gui subversion sbcl doxygen \
- meld expect wmctrl libopencv-dev libboost-all-dev libftdi-dev libcv-dev libcvaux-dev libhighgui-dev \
+ meld expect wmctrl libopencv-dev libboost-all-dev libftdi-dev \
  build-essential pkg-config freeglut3-dev zlib1g-dev zlibc libusb-1.0-0-dev libdc1394-22-dev libavformat-dev libswscale-dev \
- lib3ds-dev libjpeg-dev libgtest-dev libeigen3-dev libglew-dev vim vim-gnome libxml2-dev libxml++2.6-dev libmrpt-dev ssh sshfs xterm libjansson-dev || askabort
+ lib3ds-dev libjpeg-dev libgtest-dev libeigen3-dev libglew-dev vim libxml2-dev libxml++2.6-dev ssh sshfs xterm libjansson-dev || askabort
+
+
+
 
 	
 	progressbarinfo "Installing OS-specific packages ..."
 
 	# 12.04 packages
 	if [ "$OS_PRECISE" = true ]; then
-		apt-get -y --force-yes install libwxgtk2.8-dev openjdk-6-jre libtbb-dev || askabort
+		apt-get -y --force-yes install libwxgtk2.8-dev openjdk-6-jre libtbb-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
 	fi
 
 	# Other packages to install - except for raspberry pi:
 	if [ "$OS_RASPBIAN" = true ]; then 
-		apt-get -y --force-yes install libwxgtk2.8-dev || askabort
+		apt-get -y --force-yes install libwxgtk2.8-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
 	fi
 
 	# Xenial (16.04 Packages)
 	if [ "$OS_XENIAL" = true ]; then
-		apt-get -y --force-yes install openjdk-8-jre libtbb-dev || askabort
+		apt-get -y --force-yes install openjdk-8-jre libtbb-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
 	fi
+
+
+ 	# Xenial (20.04 Packages)
+        if [ "$OS_FOCAL" = true ]; then
+		progressbarinfo "Installing mrpt ..."
+		# Install mrpt from ppa since not available in 20.04
+		sudo add-apt-repository ppa:joseluisblancoc/mrpt
+		sudo apt-get update
+		sudo apt-get install libmrpt-dev mrpt-apps
+
+                apt-get -y --force-yes install openjdk-11-jre libtbb-dev || askabort
+        fi
+
 
 	exit 0
 ;;
@@ -408,7 +436,7 @@ package-upgrade)
 repo-co-smartsoft)
 	# check if we are in the lab and then ask wether to continue to install external stuff
 	# or quit and continue with internal stuff
-	if [ $LOCATION_SRRC = true ]; then
+	if [ "$LOCATION_SRRC" = true ]; then
 		if zenity --question --width=400 --text="It appears that you are installing from within the SRRC laboratory.\n\nDo you want to use the internal repositories instead of the public repositories?\n"; then
 			bash $SCRIPT_NAME repo-co-smartsoft-internal
 			exit 0
@@ -422,7 +450,12 @@ repo-co-smartsoft)
 	mkdir -p ~/SOFTWARE/smartsoft-ace-mdsd-v3/repos || askabort
 	ln -s ~/SOFTWARE/smartsoft-ace-mdsd-v3 ~/SOFTWARE/smartsoft || askabort
 
-	echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
+
+
+ 	# Xenial (20.04 Packages)
+        if [ "$OS_FOCAL" = false ]; then
+		echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
+	fi
 	echo "export SMART_ROOT_ACE=\$HOME/SOFTWARE/smartsoft" >> ~/.profile
 	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/repos" >> ~/.profile
 	#echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
