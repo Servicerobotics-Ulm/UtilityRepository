@@ -148,6 +148,8 @@ function check_sudo() {
 
 if `grep --ignore-case precise /etc/os-release > /dev/null`; then 
 	OS_PRECISE=true
+else
+	OS_PRECISE=false
 fi
 
 if `grep --ignore-case raspbian /etc/os-release > /dev/null`; then 
@@ -156,10 +158,14 @@ fi
 
 if `grep --ignore-case xenial /etc/os-release > /dev/null`; then 
 	OS_XENIAL=true
+else
+	OS_XENIAL=false
 fi
 
 if `grep --ignore-case focal /etc/os-release > /dev/null`; then 
 	OS_FOCAL=true
+else
+	OS_FOCAL=false
 fi
 if `ping -c 1 i-zafh-03.srrc.informatik.hs-ulm.de &> /dev/null`; then 
 	LOCATION_SRRC=true
