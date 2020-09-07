@@ -78,6 +78,9 @@
 #
 # Matthias Lutz 07.05.2020
 # Add ubuntu 20.04 support
+#
+# Matthias Lutz 03.90.2020
+# Add raspbian 10 support
 
 # DO NOT ADD CODE ABOVE THIS LINE
 # The following if is to test the update script.
@@ -148,22 +151,31 @@ function check_sudo() {
 
 if `grep --ignore-case precise /etc/os-release > /dev/null`; then 
 	OS_PRECISE=true
+	ACE_SRC_INSTALL=true
 else
 	OS_PRECISE=false
 fi
 
 if `grep --ignore-case raspbian /etc/os-release > /dev/null`; then 
 	OS_RASPBIAN=true
+	ACE_SRC_INSTALL=true
+
+	if `grep --ignore-case 10 /etc/os-release > /dev/null`; then 
+		OS_RASPBIAN10=true
+		ACE_SRC_INSTALL=false 
+	fi
 fi
 
 if `grep --ignore-case xenial /etc/os-release > /dev/null`; then 
 	OS_XENIAL=true
+	ACE_SRC_INSTALL=true
 else
 	OS_XENIAL=false
 fi
 
 if `grep --ignore-case focal /etc/os-release > /dev/null`; then 
 	OS_FOCAL=true
+	ACE_SRC_INSTALL=false
 else
 	OS_FOCAL=false
 fi
@@ -199,6 +211,9 @@ case "$BCMD" in
 menu)
 	if [ "$OS_RASPBIAN" = true ]; then 
 		zenity --info  --width=400  --text="Raspberry Pi was detected. Performing specific instructions for raspberry pi."
+		if [ "$OS_RASPBIAN10" = true ]; then 
+			zenity --info  --width=400  --text="Raspbian 10 detected."
+		fi
 	fi
 
 	if [ "$OS_XENIAL" = false -a "$OS_FOCAL" = false ]; then 
@@ -290,8 +305,7 @@ ace-source-install)
 		exit 0
 	fi
 
- 	# FOCAL (20.04 Packages)
-        if [ "$OS_FOCAL" = true ]; then
+        if [ "$ACE_SRC_INSTALL" = false ]; then
 		progressbarinfo "Installing ACE from packages..."
                 apt-get -y --force-yes install libace-dev || askabort
 		exit 0
@@ -346,7 +360,11 @@ package-install)
 
 	# Other packages to install - except for raspberry pi:
 	if [ "$OS_RASPBIAN" = true ]; then 
-		apt-get -y --force-yes install libwxgtk2.8-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
+		if [ "$OS_RASPBIAN10" = true ]; then 
+			apt-get -y --force-yes install libmrpt-dev || askabort
+		else
+			apt-get -y --force-yes install libwxgtk2.8-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
+		fi
 	fi
 
 	# Xenial (16.04 Packages)
@@ -459,13 +477,18 @@ repo-co-smartsoft)
 
 
  	# Xenial (20.04 Packages)
-        if [ "$OS_FOCAL" = false ]; then
+        if [ "$ACE_SRC_INSTALL" = true ]; then
 		echo "export ACE_ROOT=/opt/ACE_wrappers" >> ~/.profile
 	fi
 	echo "export SMART_ROOT_ACE=\$HOME/SOFTWARE/smartsoft" >> ~/.profile
 	echo "export SMART_PACKAGE_PATH=\$SMART_ROOT_ACE/repos" >> ~/.profile
 	#echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.profile
 	echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$SMART_ROOT_ACE/lib" >> ~/.bashrc
+		
+	if [ "$OS_RASPBIAN10" = true ]; then 
+		echo "Exporting SMART_NS_ADDR to set ns address to loopback"
+		echo "export SMART_NS_ADDR=127.0.0.1:20002" >> ~/.profile
+	fi
 
 	source ~/.profile 
 
