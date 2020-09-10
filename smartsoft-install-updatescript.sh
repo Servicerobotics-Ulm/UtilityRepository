@@ -173,6 +173,13 @@ else
 	OS_XENIAL=false
 fi
 
+if `grep --ignore-case bionic /etc/os-release > /dev/null`; then 
+	OS_BIONIC=true
+	ACE_SRC_INSTALL=false
+else
+	OS_BIONIC=false
+fi
+
 if `grep --ignore-case focal /etc/os-release > /dev/null`; then 
 	OS_FOCAL=true
 	ACE_SRC_INSTALL=false
@@ -216,8 +223,8 @@ menu)
 		fi
 	fi
 
-	if [ "$OS_XENIAL" = false -a "$OS_FOCAL" = false ]; then 
-		zenity --info  --width=400 --text="Ubuntu 16.04 (Xenial) or 20.04 (Focal) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 and 20.04 installation."
+	if [ "$OS_XENIAL" = false -a "$OS_FOCAL" = false -a "$OS_BIONIC" = false ]; then 
+		zenity --info  --width=400 --text="Ubuntu 16.04 (Xenial) 18.04 (Bionic) or 20.04 (Focal) was not detected. Please note that the officially supported plattform is a plain Ubuntu 16.04 and 18.04 and 20.04 installation."
 	fi
 
 	ACTION=$(zenity \
@@ -261,7 +268,7 @@ menu)
 menu-install)
 	progressbarinfo "Launching installation menu for ACE/SmartSoft"
 
-	zenity --question --width=500 --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04 or 20.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
+	zenity --question --width=500 --text="<b>ATTENTION</b>\n The script is about to install ACE/SmartSoft and dependency packages on this system.\n<b>Only use this function on a clean installation of Ubuntu 16.04 or 18.04 or 20.04.</b> Some of the following steps may not be execute twice without undoing them before.\n\n(support for Raspbian 8.0/Jessie and other distributions is experimental)\n\nDo you want to proceed?" || abort 
 
 	ACTION=$(zenity \
 		--title "Install ACE/SmartSoft and dependencies on a clean system" \
@@ -372,6 +379,10 @@ package-install)
 		apt-get -y --force-yes install openjdk-8-jre libtbb-dev libmrpt-dev libcv-dev libcvaux-dev libhighgui-dev || askabort
 	fi
 
+	# BIONIC (18.04 Packages)
+	if [ "$OS_BIONIC" = true ]; then
+		apt-get -y --force-yes install openjdk-8-jre libtbb-dev libmrpt-dev || askabort
+	fi
 
  	# Xenial (20.04 Packages)
         if [ "$OS_FOCAL" = true ]; then
