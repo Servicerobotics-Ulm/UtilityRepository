@@ -15,6 +15,8 @@ SMART_ADD_PACKAGE(SmartProperty ${CMAKE_CURRENT_LIST_DIR}/smartProperty)
 SMART_ADD_PACKAGE(SmartXml ${CMAKE_CURRENT_LIST_DIR}/smartXml)
 SMART_ADD_PACKAGE(TransformationMatrices ${CMAKE_CURRENT_LIST_DIR}/transformationMatrices)
 SMART_ADD_PACKAGE(YAML_CPP ${CMAKE_CURRENT_LIST_DIR}/yaml-cpp)
+SMART_ADD_PACKAGE(nlohmann_json ${CMAKE_CURRENT_LIST_DIR}/nlohmann_json)
+
 #SMART_ADD_UTILITY(Metric-FF)
 #SMART_ADD_UTILITY(smartSoftDebianMetaPackages)
 #SMART_ADD_UTILITY(smartSoftBuildEnv-DebianPackage)

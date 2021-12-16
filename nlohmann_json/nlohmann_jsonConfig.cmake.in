@@ -1,0 +1,9 @@
+# we simply redirect the current config file to the real nlohmann_jsonConfig.cmake config file provided by the project itself
+
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/NlohmannJsonGit-prefix)
+  # within build tree
+  include(${CMAKE_CURRENT_LIST_DIR}/NlohmannJsonGit-prefix/src/NlohmannJsonGit-build/nlohmann_jsonConfig.cmake)
+else()
+  # from installed treen (assuming the current list dir is $SMART_ROOT_ACE/modules)
+  include(${CMAKE_CURRENT_LIST_DIR}/../lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake)
+endif()
